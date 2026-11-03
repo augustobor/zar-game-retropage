@@ -1,0 +1,10 @@
+flowchart TD
+    A[Pedido a una API] --> B{¿Respondió OK?}
+    B -- Sí --> OK[✅ Datos reales]
+    B -- 429 --> C{"¿Retry-After ≤ 10 s?"}
+    C -- Sí --> W[⏳ Espera y reintenta<br/>hasta 4 veces] --> A
+    C -- No --> F
+    B -- Otro error --> F{¿Qué falló?}
+    F -- Perfil completo --> DEMO[🎭 Datos de demo<br/>+ aviso en la tarjeta]
+    F -- Ficha de un juego --> FB[🩹 Ficha básica<br/>con lo que ya había]
+    F -- Último juego RA --> NL[🤷 Se omite solo ese dato]

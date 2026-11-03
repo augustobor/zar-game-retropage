@@ -1,0 +1,70 @@
+---
+import { profile } from '../../data/profile';
+import { url } from '../../lib/url';
+
+const path = Astro.url.pathname;
+const homeHref = url('/');
+const links = [
+  { href: url('/#brief'), label: 'Brief', current: false },
+  { href: url('/#juegos'), label: 'Juegos', current: path.startsWith(url('/juegos')) },
+  { href: url('/logros/'), label: 'Logros', current: path.startsWith(url('/logros')) },
+].map((link) => ({ ...link, ariaCurrent: link.current ? ('page' as const) : undefined }));
+---
+
+<nav class="site-nav" aria-label="Principal">
+  <a class="site-nav__logo" href={homeHref}>{profile.handle}<span class="site-nav__cursor" aria-hidden="true">_</span></a>
+  <ul class="site-nav__links">
+    {links.map((link) => <li><a class="site-nav__link" href={link.href} aria-current={link.ariaCurrent}>{link.label}</a></li>)}
+  </ul>
+</nav>
+
+<style>
+  .site-nav {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.9rem max(1rem, (100% - 1180px) / 2);
+    background: linear-gradient(180deg, rgb(18 10 34 / 0.95), rgb(18 10 34 / 0));
+  }
+
+  .site-nav__logo {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--sun);
+    text-decoration: none;
+  }
+
+  .site-nav__cursor {
+    color: var(--pink);
+    animation: site-nav-blink 1s steps(1) infinite;
+  }
+
+  .site-nav__links {
+    display: flex;
+    gap: 1.25rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .site-nav__link {
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .site-nav__link:hover,
+  .site-nav__link[aria-current='page'] {
+    color: var(--teal);
+  }
+
+  @keyframes site-nav-blink {
+    50% {
+      opacity: 0;
+    }
+  }
+</style>

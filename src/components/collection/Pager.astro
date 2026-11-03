@@ -1,0 +1,55 @@
+---
+// Contenedor vacío: los botones los genera src/scripts/collection.ts según el filtro activo.
+interface Props {
+  label: string;
+}
+const { label } = Astro.props;
+---
+
+<nav class="pager" data-pager aria-label={label}></nav>
+
+<style>
+  /* Los botones se crean con JS y no llevan el atributo de alcance de Astro: por eso :global() */
+  .pager {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+  }
+
+  .pager :global(.pager__button) {
+    min-width: 2.6rem;
+    height: 2.6rem;
+    padding: 0 0.6rem;
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    color: var(--ink);
+    background: var(--surface);
+    border: 2px solid var(--surface-2);
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .pager :global(.pager__button:hover:not(:disabled)) {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+
+  .pager :global(.pager__button[aria-current='page']) {
+    color: var(--bg);
+    background: var(--sun);
+    border-color: var(--sun);
+    box-shadow: 3px 3px 0 var(--pink);
+  }
+
+  .pager :global(.pager__button:disabled) {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .pager :global(.pager__gap) {
+    color: var(--muted);
+  }
+</style>

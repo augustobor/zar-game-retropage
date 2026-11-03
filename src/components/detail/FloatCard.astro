@@ -1,0 +1,120 @@
+---
+// Tarjeta que flota (sube/baja con leve giro) con brillo holográfico y sombra en el piso.
+---
+
+<div class="float-card">
+  <div class="float-card__glow" aria-hidden="true"></div>
+  <div class="float-card__card">
+    <slot />
+  </div>
+  <div class="float-card__shadow" aria-hidden="true"></div>
+</div>
+
+<style>
+  .float-card {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    padding: 1rem 0 0;
+  }
+
+  .float-card__glow {
+    position: absolute;
+    inset: 5% 5% 20%;
+    background: radial-gradient(circle, rgb(255 46 136 / 0.55), rgb(255 138 61 / 0.25) 45%, transparent 70%);
+    filter: blur(30px);
+    animation: float-card-pulse 5s ease-in-out infinite;
+  }
+
+  .float-card__card {
+    position: relative;
+    width: min(300px, 80vw);
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--surface);
+    border: 2px solid var(--pink);
+    box-shadow:
+      8px 8px 0 var(--violet),
+      0 20px 60px rgb(0 0 0 / 0.5);
+    animation: float-card-float 5s ease-in-out infinite;
+  }
+
+  /* Reflejo holográfico que cruza la tarjeta */
+  .float-card__card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 0.18) 50%, transparent 65%);
+    background-size: 250% 100%;
+    pointer-events: none;
+    animation: float-card-shine 6s ease-in-out infinite;
+  }
+
+  .float-card__shadow {
+    width: 55%;
+    height: 18px;
+    margin-top: 1.75rem;
+    border-radius: 50%;
+    background: rgb(0 0 0 / 0.55);
+    filter: blur(6px);
+    animation: float-card-shadow 5s ease-in-out infinite;
+  }
+
+  /* En celular la tarjeta no debe tapar el título: más chica */
+  @media (max-width: 640px) {
+    .float-card__card {
+      width: min(230px, 62vw);
+    }
+
+    .float-card__shadow {
+      margin-top: 1.25rem;
+    }
+  }
+
+  @keyframes float-card-float {
+    0%,
+    100% {
+      transform: translateY(0) rotate(-1.5deg);
+    }
+    50% {
+      transform: translateY(-18px) rotate(1.5deg);
+    }
+  }
+
+  @keyframes float-card-shadow {
+    0%,
+    100% {
+      transform: scaleX(1);
+      opacity: 0.6;
+    }
+    50% {
+      transform: scaleX(0.75);
+      opacity: 0.3;
+    }
+  }
+
+  @keyframes float-card-shine {
+    0%,
+    60% {
+      background-position: 150% 0;
+    }
+    100% {
+      background-position: -50% 0;
+    }
+  }
+
+  @keyframes float-card-pulse {
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .float-card__glow,
+    .float-card__card,
+    .float-card__card::after,
+    .float-card__shadow {
+      animation: none;
+    }
+  }
+</style>

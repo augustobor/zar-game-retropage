@@ -1,0 +1,19 @@
+{
+  "name": "portfolio-retro-gamer",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "docs:diagrams": "node docs/render-diagrams.mjs"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "fast-xml-parser": "^4.5.0"
+  },
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^11.17.1"
+  }
+}

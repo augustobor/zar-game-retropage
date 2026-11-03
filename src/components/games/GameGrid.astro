@@ -1,0 +1,78 @@
+---
+import SectionTitle from '../ui/SectionTitle.astro';
+import CollectionToolbar from '../collection/CollectionToolbar.astro';
+import Pager from '../collection/Pager.astro';
+import GameCard from './GameCard.astro';
+import type { GameProgress } from '../../lib/types';
+import { percent, sourceOptions } from '../../lib/format';
+import { url } from '../../lib/url';
+
+interface Props {
+  games: GameProgress[];
+}
+const PAGE_SIZE = 8;
+
+const games = [...Astro.props.games].sort(
+  (a, b) => percent(b.unlocked, b.total) - percent(a.unlocked, a.total) || b.unlocked - a.unlocked,
+);
+const options = sourceOptions(games);
+const cards = games.map((game, i) => ({ game, hidden: i >= PAGE_SIZE }));
+const logrosHref = url('/logros/');
+---
+
+<section class="game-grid section container" id="juegos" aria-labelledby="juegos-title" data-collection data-page-size={PAGE_SIZE}>
+  <div class="game-grid__head">
+    <SectionTitle id="juegos-title" index="02">Juegos</SectionTitle>
+    <a class="game-grid__cta" href={logrosHref}>Ver logros ▶</a>
+  </div>
+
+  <CollectionToolbar options={options} label="Filtrar juegos por plataforma" searchPlaceholder="Buscar juego o consola…" />
+
+  <ul class="game-grid__list" data-items>
+    {cards.map((card) => <GameCard {...card} />)}
+  </ul>
+
+  <p class="empty" data-empty hidden>No hay juegos que coincidan.</p>
+  <Pager label="Páginas de juegos" />
+</section>
+
+<script>
+  import '../../scripts/collection';
+</script>
+
+<style>
+  .game-grid__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+  }
+
+  .game-grid__cta {
+    font-family: var(--font-pixel);
+    font-size: 0.7rem;
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  .game-grid__cta:hover {
+    color: var(--sun);
+  }
+
+  .game-grid__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+  }
+
+  /* Celular: 2 columnas en vez de una tarjeta gigante por fila */
+  @media (max-width: 640px) {
+    .game-grid__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+  }
+</style>

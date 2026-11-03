@@ -1,0 +1,155 @@
+---
+import ProgressBar from '../ui/ProgressBar.astro';
+import type { GameProgress } from '../../lib/types';
+import { percent, AWARD_LABELS } from '../../lib/format';
+import { url } from '../../lib/url';
+
+interface Props {
+  game: GameProgress;
+  hidden?: boolean;
+}
+const { game, hidden = false } = Astro.props;
+
+const href = url(`/juegos/${game.id}/`);
+const pct = percent(game.unlocked, game.total);
+const hasAchievements = game.total > 0;
+const meta = [game.platform, game.hours ? `${game.hours} h` : null].filter(Boolean).join(' · ');
+const countLabel = hasAchievements ? `${game.unlocked}/${game.total} · ${pct}%` : 'Sin logros';
+const awardLabel = game.award ? (AWARD_LABELS[game.award] ?? game.award) : undefined;
+const progressLabel = `Progreso de logros de ${game.title}`;
+const artClass = `game-card__art game-card__art--${game.art}`;
+const initials = game.title.slice(0, 2);
+---
+
+<li class="game-card" data-group={game.source} hidden={hidden}>
+  <a class="game-card__link" href={href}>
+    <div class={artClass}>
+      {game.image ? <img class="game-card__image" src={game.image} alt="" loading="lazy" /> : <span aria-hidden="true">{initials}</span>}
+    </div>
+
+    <div class="game-card__body">
+      <p class="game-card__meta">{meta}</p>
+      <h3 class="game-card__title">{game.title}</h3>
+      {hasAchievements && <ProgressBar value={pct} label={progressLabel} />}
+      <p class="game-card__count">
+        {countLabel}
+        {awardLabel && <span class="game-card__award">{awardLabel}</span>}
+      </p>
+    </div>
+  </a>
+</li>
+
+<style>
+  .game-card {
+    list-style: none;
+  }
+
+  .game-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid rgb(255 255 255 / 0.06);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      translate 0.15s,
+      border-color 0.15s;
+  }
+
+  .game-card__link:hover {
+    translate: 0 -3px;
+    border-color: var(--pink);
+  }
+
+  /* ---------- Arte ---------- */
+
+  .game-card__art {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 460 / 215;
+    background: linear-gradient(135deg, var(--plum), #6b1d6b 60%, #d6336c);
+    font-family: var(--font-display);
+    font-size: 2rem;
+  }
+
+  .game-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* RA: icono cuadrado pixel art centrado sobre el degradé */
+  .game-card__art--icon .game-card__image {
+    width: auto;
+    height: 72%;
+    image-rendering: pixelated;
+    border-radius: 6px;
+    box-shadow: 4px 4px 0 rgb(0 0 0 / 0.35);
+  }
+
+  /* ---------- Texto ---------- */
+
+  .game-card__body {
+    padding: 0.9rem 1rem 1rem;
+  }
+
+  .game-card__meta {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .game-card__title {
+    margin: 0.25rem 0 0.75rem;
+    font-size: 1.05rem;
+    line-height: 1.25;
+  }
+
+  .game-card__count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+  }
+
+  .game-card__award {
+    margin-left: auto;
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--sun);
+    border-radius: 4px;
+  }
+
+  /* Tarjeta compacta para la grilla de 2 columnas en celular */
+  @media (max-width: 640px) {
+    .game-card__body {
+      padding: 0.7rem 0.75rem 0.8rem;
+    }
+
+    .game-card__meta {
+      font-size: 0.7rem;
+    }
+
+    .game-card__title {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .game-card__count {
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      font-size: 0.75rem;
+    }
+
+    .game-card__award {
+      margin-left: 0;
+    }
+  }
+</style>

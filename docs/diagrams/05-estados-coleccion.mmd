@@ -1,0 +1,14 @@
+stateDiagram-v2
+    [*] --> Render: carga de la página
+    Render --> Render: click en filtro o texto en el buscador<br/>→ vuelve a la página 1
+    Render --> Paginar: click en ◀ / número / ▶
+    Paginar --> Render: page = destino
+    Render --> Compensar: después de paginar
+    Compensar --> [*]: scrollBy(Δ) → el paginador<br/>queda bajo el cursor
+
+    note right of Render
+        matching = items por grupo + texto
+        visibles = slice(página)
+        resto → hidden
+        rearmar botones del paginador
+    end note

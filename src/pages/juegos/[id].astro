@@ -1,0 +1,84 @@
+---
+import Base from '../../layouts/Base.astro';
+import DetailHero from '../../components/detail/DetailHero.astro';
+import GameShowcase from '../../components/detail/GameShowcase.astro';
+import ScreenshotGallery from '../../components/detail/ScreenshotGallery.astro';
+import GameAchievements from '../../components/detail/GameAchievements.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import StatList from '../../components/ui/StatList.astro';
+import type { GameProgress } from '../../lib/types';
+import { getGames, getGameDetail, getAchievementList } from '../../lib/data';
+import { profile } from '../../data/profile';
+import { url } from '../../lib/url';
+import { AWARD_LABELS, SOURCE_LABELS, definedStats, formatNumber, formatRelease, percent } from '../../lib/format';
+
+/** Una página por juego: /juegos/retro-534/, /juegos/steam-1774580/… */
+export async function getStaticPaths() {
+  const games = await getGames();
+  return games.map((game) => ({ params: { id: game.id }, props: { gameId: game.id } }));
+}
+
+interface Props {
+  gameId: GameProgress['id'];
+}
+const [game, list] = await Promise.all([getGameDetail(Astro.props.gameId), getAchievementList()]);
+if (!game) return Astro.redirect(url('/#juegos'));
+const linkedIds = new Set(list.map((a) => a.id));
+
+const title = `${game.title} · ${profile.handle}`;
+const description = game.description ?? `Progreso de ${profile.handle} en ${game.title} (${game.platform}).`;
+const sourceLabel = SOURCE_LABELS[game.source];
+// En Steam la plataforma ya dice "PC · Steam"
+const kicker = game.source === 'steam' ? `// ${game.platform}` : `// ${sourceLabel} · ${game.platform}`;
+const awardLabel = game.award ? (AWARD_LABELS[game.award] ?? game.award) : undefined;
+const chips = awardLabel ? [...game.genres, awardLabel] : game.genres;
+const hasScreenshots = game.screenshots.length > 0;
+
+const facts = definedStats([
+  { label: 'Plataforma', value: game.platform },
+  { label: 'Desarrollador', value: game.developer },
+  { label: 'Distribuidor', value: game.publisher },
+  { label: 'Género', value: game.genres.join(', ') },
+  { label: 'Lanzamiento', value: formatRelease(game.released) },
+]);
+
+const ratings = definedStats([
+  { label: 'Metacritic', value: game.metacritic },
+  { label: 'Jugadores en RetroAchievements', value: game.players && formatNumber(game.players) },
+  { label: 'Logros', value: game.total > 0 && `${game.unlocked} de ${game.total} (${percent(game.unlocked, game.total)}%)` },
+  { label: 'Puntos', value: game.pointsTotal && `${formatNumber(game.pointsEarned ?? 0)} de ${formatNumber(game.pointsTotal)}` },
+  { label: 'Horas jugadas', value: game.hours && `${game.hours.toLocaleString('es-AR')} h` },
+  { label: 'Distinción', value: awardLabel },
+]);
+---
+
+<Base title={title} description={description}>
+  <DetailHero
+    backHref={url('/#juegos')}
+    backLabel="Juegos"
+    kicker={kicker}
+    title={game.title}
+    lead={game.description}
+    externalHref={game.externalUrl}
+    externalLabel={`Ver en ${sourceLabel} ↗`}
+  >
+    <GameShowcase slot="card" game={game} />
+    <ChipList items={chips} tone="sun" />
+  </DetailHero>
+
+  <main class="container">
+    <section class="section panels" aria-label="Ficha del juego">
+      <article class="panel">
+        <h2 class="panel__label">Ficha</h2>
+        <StatList items={facts} layout="rows" />
+      </article>
+      <article class="panel">
+        <h2 class="panel__label">Valoración y progreso</h2>
+        <StatList items={ratings} layout="rows" />
+      </article>
+    </section>
+
+    {hasScreenshots && <ScreenshotGallery images={game.screenshots} gameTitle={game.title} />}
+    <GameAchievements game={game} linkedIds={linkedIds} />
+  </main>
+</Base>

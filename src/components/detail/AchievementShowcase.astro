@@ -1,0 +1,116 @@
+---
+import FloatCard from './FloatCard.astro';
+import type { AchievementDetail } from '../../lib/types';
+import { formatDate } from '../../lib/format';
+
+interface Props {
+  achievement: AchievementDetail & { game?: string };
+}
+const { achievement } = Astro.props;
+
+const iconAlt = `Insignia de ${achievement.title}`;
+const pointsLabel = achievement.points != null ? `${achievement.points} pts` : undefined;
+const unlockedLabel = achievement.unlockedAt ? `Desbloqueado el ${formatDate(achievement.unlockedAt)}` : 'Bloqueado';
+const badgeClass = achievement.hardcore ? 'achievement-showcase__badge achievement-showcase__badge--hardcore' : 'achievement-showcase__badge';
+---
+
+<FloatCard>
+  <figure class="achievement-showcase">
+    <div class="achievement-showcase__stage">
+      <div class={badgeClass}>
+        {achievement.icon ? <img class="achievement-showcase__icon" src={achievement.icon} alt={iconAlt} /> : <span class="achievement-showcase__star" aria-hidden="true">★</span>}
+      </div>
+      {pointsLabel && <span class="achievement-showcase__points">{pointsLabel}</span>}
+    </div>
+    <figcaption class="achievement-showcase__caption">
+      <span class="achievement-showcase__game">{achievement.game}</span>
+      <span class="achievement-showcase__title">{achievement.title}</span>
+      <span class="achievement-showcase__date">{unlockedLabel}</span>
+    </figcaption>
+  </figure>
+</FloatCard>
+
+<style>
+  .achievement-showcase {
+    margin: 0;
+  }
+
+  .achievement-showcase__stage {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    background:
+      radial-gradient(circle at 50% 45%, rgb(255 210 63 / 0.35), transparent 55%),
+      linear-gradient(160deg, var(--plum), #6b1d6b 60%, #d6336c);
+  }
+
+  /* Marco tipo medalla alrededor de la insignia */
+  .achievement-showcase__badge {
+    display: grid;
+    place-items: center;
+    width: 58%;
+    aspect-ratio: 1;
+    padding: 8px;
+    border-radius: 22px;
+    background: linear-gradient(145deg, var(--sun), var(--orange) 50%, var(--pink));
+    box-shadow:
+      6px 6px 0 rgb(0 0 0 / 0.35),
+      0 0 40px rgb(255 210 63 / 0.4);
+  }
+
+  .achievement-showcase__badge--hardcore {
+    background: linear-gradient(145deg, var(--teal), var(--violet) 55%, var(--pink));
+  }
+
+  .achievement-showcase__icon {
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    image-rendering: pixelated;
+    object-fit: cover;
+  }
+
+  .achievement-showcase__star {
+    font-size: 4rem;
+    color: var(--bg);
+  }
+
+  .achievement-showcase__points {
+    position: absolute;
+    top: 0.9rem;
+    right: 0.9rem;
+    padding: 0.35rem 0.6rem;
+    font-family: var(--font-pixel);
+    font-size: 0.6rem;
+    color: var(--bg);
+    background: var(--sun);
+    border-radius: 6px;
+    box-shadow: 3px 3px 0 var(--pink);
+  }
+
+  .achievement-showcase__caption {
+    display: grid;
+    gap: 0.3rem;
+    padding: 1rem 1.1rem 1.2rem;
+  }
+
+  .achievement-showcase__game {
+    font-family: var(--font-pixel);
+    font-size: 0.5rem;
+    line-height: 1.6;
+    color: var(--teal);
+    text-transform: uppercase;
+  }
+
+  .achievement-showcase__title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    line-height: 1.25;
+  }
+
+  .achievement-showcase__date {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+</style>

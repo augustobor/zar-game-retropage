@@ -1,0 +1,190 @@
+---
+import Palms from './Palms.astro';
+import HudStats from './HudStats.astro';
+import type { SourceData } from '../../lib/types';
+import { profile } from '../../data/profile';
+import { formatNumber } from '../../lib/format';
+
+interface Props {
+  retro: SourceData;
+  steam: SourceData;
+}
+const { retro, steam } = Astro.props;
+
+const games = [...retro.games, ...steam.games];
+const avatar = steam.profile?.avatar ?? retro.profile?.avatar;
+const avatarAlt = `Avatar de ${profile.handle}`;
+const unlockedTotal = games.reduce((sum, g) => sum + g.unlocked, 0);
+const steamHours = steam.games.reduce((sum, g) => sum + (g.hours ?? 0), 0);
+
+const hud = [
+  { label: 'Logros', value: formatNumber(unlockedTotal) },
+  { label: 'Puntos RA', value: formatNumber(retro.profile?.points ?? 0) },
+  { label: 'Horas Steam', value: formatNumber(steamHours) },
+  { label: 'Juegos', value: formatNumber(games.length) },
+];
+---
+
+<header class="hero">
+  <div class="hero__sky" aria-hidden="true">
+    <div class="hero__sun"></div>
+    <Palms class="hero__palms" />
+    <div class="hero__floor"></div>
+  </div>
+
+  <div class="hero__content container">
+    <p class="kicker">// Perfil de jugador</p>
+    <h1 class="hero__title">{profile.handle}</h1>
+    <p class="hero__tagline">{profile.tagline}</p>
+
+    <div class="hero__card">
+      {avatar && <img class="hero__avatar" src={avatar} alt={avatarAlt} width="88" height="88" />}
+      <HudStats items={hud} />
+    </div>
+  </div>
+</header>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: center;
+    min-height: 100svh;
+    padding: 7rem 0 4rem;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* ---------- Escenario synthwave ---------- */
+
+  .hero__sky {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, var(--bg) 0%, #2a0f45 30%, #6b1d6b 52%, #d6336c 64%, var(--orange) 72%, var(--bg) 72.2%);
+  }
+
+  .hero__sun {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: min(46vw, 440px);
+    aspect-ratio: 1;
+    translate: -50% 0;
+    border-radius: 50%;
+    background: linear-gradient(180deg, var(--sun) 0%, var(--orange) 50%, var(--pink) 100%);
+    box-shadow: 0 0 120px 30px rgb(255 46 136 / 0.35);
+    mask: repeating-linear-gradient(
+      180deg,
+      #000 0 58%,
+      transparent 58% 62%,
+      #000 62% 66%,
+      transparent 66% 71%,
+      #000 71% 75%,
+      transparent 75% 81%,
+      #000 81% 84%,
+      transparent 84% 92%,
+      #000 92% 94%,
+      transparent 94%
+    );
+  }
+
+  .hero__sky :global(.hero__palms) {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 27.8%;
+    width: 100%;
+    height: 34%;
+    color: #0b0614;
+  }
+
+  .hero__floor {
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    height: 28%;
+    background:
+      linear-gradient(180deg, var(--bg) 0%, transparent 40%),
+      repeating-linear-gradient(90deg, rgb(255 46 136 / 0.55) 0 2px, transparent 2px 80px),
+      repeating-linear-gradient(0deg, rgb(25 227 201 / 0.45) 0 2px, transparent 2px 40px),
+      var(--bg);
+    transform: perspective(300px) rotateX(55deg);
+    transform-origin: top;
+    animation: hero-drive 2.4s linear infinite;
+  }
+
+  @keyframes hero-drive {
+    to {
+      background-position: 0 0, 0 0, 0 40px, 0 0;
+    }
+  }
+
+  /* ---------- Contenido ---------- */
+
+  .hero__content {
+    display: grid;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .hero__title {
+    margin: 0.25em 0 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(5rem, 22vw, 15rem);
+    line-height: 0.85;
+    background: var(--sunset);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 6px 0 var(--plum)) drop-shadow(0 0 30px rgb(255 46 136 / 0.45));
+  }
+
+  .hero__tagline {
+    margin: -0.2em 0 2.5rem;
+    font-family: var(--font-script);
+    font-size: clamp(1.6rem, 5vw, 2.6rem);
+    color: var(--teal);
+    transform: rotate(-4deg);
+    text-shadow:
+      0 0 12px rgb(25 227 201 / 0.6),
+      2px 2px 0 var(--plum);
+  }
+
+  .hero__card {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.25rem;
+    background: rgb(18 10 34 / 0.75);
+    border: 2px solid var(--pink);
+    border-radius: 14px;
+    box-shadow:
+      6px 6px 0 var(--violet),
+      0 0 40px rgb(255 46 136 / 0.25);
+    backdrop-filter: blur(6px);
+  }
+
+  .hero__avatar {
+    flex: none;
+    width: 88px;
+    height: 88px;
+    border-radius: 10px;
+    border: 2px solid var(--sun);
+    object-fit: cover;
+  }
+
+  @media (max-width: 640px) {
+    .hero__card {
+      flex-direction: column;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__floor {
+      animation: none;
+    }
+  }
+</style>

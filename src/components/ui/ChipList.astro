@@ -1,0 +1,41 @@
+---
+
+interface Props {
+  items: string[];
+  tone?: 'teal' | 'orange' | 'sun';
+}
+const { items, tone = 'teal' } = Astro.props;
+const className = `chip-list chip-list--${tone}`;
+---
+
+<ul class={className}>
+  {items.map((item) => <li class="chip-list__item">{item}</li>)}
+</ul>
+
+<style>
+  .chip-list {
+    --chip-color: var(--teal);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .chip-list--orange {
+    --chip-color: var(--orange);
+  }
+
+  .chip-list--sun {
+    --chip-color: var(--sun);
+  }
+
+  .chip-list__item {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--chip-color);
+    border-radius: 999px;
+    color: var(--chip-color);
+    font-size: 0.9rem;
+  }
+</style>

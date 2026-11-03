@@ -1,0 +1,29 @@
+---
+
+interface Props {
+  /** 0 a 100 */
+  value: number;
+  label: string;
+  size?: 'sm' | 'lg';
+}
+const { value, label, size = 'sm' } = Astro.props;
+const className = `progress-bar progress-bar--${size}`;
+const style = `--value:${value}%`;
+---
+
+<div class={className} style={style} role="progressbar" aria-label={label} aria-valuenow={value} aria-valuemin="0" aria-valuemax="100"></div>
+
+<style>
+  .progress-bar {
+    height: 8px;
+    border-radius: 99px;
+    background: var(--surface-2) linear-gradient(90deg, var(--teal), var(--sun)) no-repeat;
+    background-size: var(--value) 100%;
+  }
+
+  .progress-bar--lg {
+    height: 14px;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    box-shadow: inset 0 0 0 2px var(--bg);
+  }
+</style>

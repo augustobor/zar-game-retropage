@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    participant B as ⚙️ astro build
+    participant D as lib/data.ts (caché)
+    participant RA as 👾 RetroAchievements
+    participant ST as 🎮 Steam
+    participant P as 📄 Páginas
+
+    B->>D: getProfileData()
+    par Perfil RA (1 pedido cada 1,5 s)
+        D->>RA: GetUserProfile · RecentAchievements<br/>CompletionProgress · RecentlyPlayedGames
+    and Perfil Steam
+        D->>ST: perfil XML + logros XML por juego
+    end
+    D-->>B: { retro, steam } normalizados
+    B->>P: index · logros/index
+    loop getStaticPaths → 1 página por juego / logro
+        P->>D: getGameDetail(gameId)
+        alt primera vez para ese juego
+            D->>RA: GetGameInfoAndUserProgress
+            D->>ST: appdetails + rareza global
+        else ya pedido
+            D-->>P: desde caché ♻️
+        end
+    end
+    P-->>B: HTML estático → dist/

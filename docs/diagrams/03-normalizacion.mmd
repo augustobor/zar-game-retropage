@@ -1,0 +1,9 @@
+flowchart TB
+    subgraph RAW["Datos crudos"]
+        R1["RA JSON<br/>AchievementID, BadgeURL,<br/>Date 'YYYY-MM-DD HH:mm:ss'"]
+        S1["Steam XML<br/>apiname, iconClosed,<br/>closed='1', unlockTimestamp"]
+    end
+    R1 --> N1["retroachievements.ts"]
+    S1 --> N2["steam.ts"]
+    N1 & N2 --> T["types.ts<br/>Achievement · GameProgress<br/>GameDetail · AchievementDetail"]
+    T --> C["Componentes .astro"]

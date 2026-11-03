@@ -1,0 +1,54 @@
+---
+import SectionTitle from '../ui/SectionTitle.astro';
+import Prose from '../ui/Prose.astro';
+import ChipList from '../ui/ChipList.astro';
+import StatBars from '../ui/StatBars.astro';
+import Timeline from '../ui/Timeline.astro';
+import { profile } from '../../data/profile';
+
+const { bio, location, platforms, favorites, stats, timeline } = profile;
+---
+
+<section class="brief section container" id="brief" aria-labelledby="brief-title">
+  <SectionTitle id="brief-title" index="01">Brief</SectionTitle>
+
+  <div class="brief__grid">
+    <article class="panel">
+      <h3 class="panel__label">Biografía</h3>
+      <Prose paragraphs={bio} />
+      <p class="brief__location">📍 {location}</p>
+
+      <h3 class="panel__label">Plataformas</h3>
+      <ChipList items={platforms} />
+
+      <h3 class="panel__label">Favoritos de siempre</h3>
+      <ChipList items={favorites} tone="orange" />
+    </article>
+
+    <aside class="panel">
+      <h3 class="panel__label">Hoja de personaje</h3>
+      <StatBars items={stats} />
+    </aside>
+  </div>
+
+  <Timeline items={timeline} />
+</section>
+
+<style>
+  .brief__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .brief__location {
+    margin: 0;
+    color: var(--muted);
+  }
+
+  @media (max-width: 800px) {
+    .brief__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

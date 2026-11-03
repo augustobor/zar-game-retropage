@@ -1,0 +1,13 @@
+flowchart TB
+    ENV["🔑 .env<br/>keys y usuarios"] --> BUILD
+    subgraph BUILD["⚙️ astro build (Node)"]
+        LIB["src/lib/<br/>steam.ts · retroachievements.ts"]
+        PAGES["src/pages/*.astro<br/>+ componentes"]
+        LIB --> PAGES
+    end
+    STEAM[("🎮 Steam<br/>XML público / Web API / Store")] <--> LIB
+    RA[("👾 RetroAchievements<br/>Web API")] <--> LIB
+    BUILD --> DIST["📦 dist/<br/>HTML + CSS + JS mínimo"]
+    DIST --> HOST["☁️ Hosting estático"]
+    HOST --> BROWSER["🖥️ Navegador<br/>filtro · búsqueda · paginación"]
+    CRON["⏰ Rebuild programado<br/>(pendiente)"] -.-> BUILD

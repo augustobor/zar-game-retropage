@@ -1,0 +1,28 @@
+---
+import AccountCard from './AccountCard.astro';
+import type { SourceData } from '../../lib/types';
+
+interface Props {
+  sources: SourceData[];
+}
+const { sources } = Astro.props;
+---
+
+<section class="account-list" aria-labelledby="cuentas-title">
+  <h2 class="visually-hidden" id="cuentas-title">Cuentas</h2>
+  <div class="account-list__grid">
+    {sources.map((source) => <AccountCard source={source} />)}
+  </div>
+</section>
+
+<style>
+  .account-list {
+    padding-top: 3rem;
+  }
+
+  .account-list__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+</style>

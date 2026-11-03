@@ -1,0 +1,31 @@
+---
+import AchievementCard from '../achievements/AchievementCard.astro';
+import type { AchievementDetail } from '../../lib/types';
+import { url } from '../../lib/url';
+
+interface Props {
+  achievements: AchievementDetail[];
+  linkedIds: Set<string>;
+}
+const { achievements, linkedIds } = Astro.props;
+
+const cards = achievements.map((achievement) => ({
+  achievement,
+  group: achievement.source,
+  href: linkedIds.has(achievement.id) ? url(`/logros/${achievement.id}/`) : undefined,
+}));
+---
+
+<ul class="related-achievements">
+  {cards.map((card) => <AchievementCard {...card} />)}
+</ul>
+
+<style>
+  .related-achievements {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+  }
+</style>

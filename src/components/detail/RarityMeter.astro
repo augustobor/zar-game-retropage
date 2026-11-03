@@ -1,0 +1,58 @@
+---
+import ProgressBar from '../ui/ProgressBar.astro';
+import { formatNumber, formatPercent, rarityLabel } from '../../lib/format';
+
+interface Props {
+  /** % de jugadores que tienen el logro */
+  rarity: number;
+  /** Cantidad absoluta de jugadores (solo RA) */
+  awarded?: number;
+}
+const { rarity, awarded } = Astro.props;
+
+const tier = rarityLabel(rarity);
+const percentLabel = formatPercent(rarity);
+const detail = awarded != null ? `${formatNumber(awarded)} jugadores lo tienen` : 'de los jugadores lo tiene';
+const value = Math.max(1, Math.round(rarity));
+---
+
+<div class="rarity-meter">
+  <p class="rarity-meter__tier">{tier}</p>
+  <p class="rarity-meter__value">
+    <span class="rarity-meter__percent">{percentLabel}</span>
+    <span class="rarity-meter__detail">{detail}</span>
+  </p>
+  <ProgressBar value={value} label="Porcentaje de jugadores con este logro" size="lg" />
+</div>
+
+<style>
+  .rarity-meter {
+    display: grid;
+    gap: 0.6rem;
+  }
+
+  .rarity-meter__tier {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 1.8rem;
+    color: var(--sun);
+  }
+
+  .rarity-meter__value {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+  }
+
+  .rarity-meter__percent {
+    font-family: var(--font-pixel);
+    font-size: 0.9rem;
+    color: var(--teal);
+  }
+
+  .rarity-meter__detail {
+    color: var(--muted);
+  }
+</style>

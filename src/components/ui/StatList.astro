@@ -1,0 +1,69 @@
+---
+
+export interface Stat {
+  label: string;
+  value: string;
+}
+
+interface Props {
+  items: Stat[];
+  /** 'fields' = cajas tipo textfield en grilla; 'rows' = una por renglón */
+  layout?: 'fields' | 'rows';
+}
+const { items, layout = 'fields' } = Astro.props;
+const className = `stat-list stat-list--${layout}`;
+---
+
+<dl class={className}>
+  {
+    items.map((item) => (
+      <div class="stat-list__item">
+        <dt class="stat-list__label">{item.label}</dt>
+        <dd class="stat-list__value">{item.value}</dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .stat-list {
+    display: grid;
+    gap: 0.6rem;
+    margin: 0;
+  }
+
+  .stat-list--fields {
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  }
+
+  .stat-list--rows {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .stat-list__label {
+    margin-bottom: 0.3rem;
+    font-family: var(--font-pixel);
+    font-size: 0.5rem;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  .stat-list__value {
+    margin: 0;
+    padding: 0.45rem 0.65rem;
+    font-size: 0.92rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--sun);
+    background: var(--bg);
+    border: 1px solid var(--surface-2);
+    border-radius: 6px;
+    box-shadow: inset 0 2px 0 rgb(0 0 0 / 0.35);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .stat-list--fields .stat-list__value {
+    white-space: nowrap;
+  }
+</style>

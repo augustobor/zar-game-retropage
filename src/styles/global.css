@@ -1,0 +1,150 @@
+/* ==========================================================================
+   Global: tokens de diseño, reset y utilidades compartidas.
+   El estilo de cada componente vive en su propio .css junto al .astro (BEM).
+   ========================================================================== */
+
+:root {
+  --bg: #120a22;
+  --surface: #1d1236;
+  --surface-2: #2a1a4a;
+  --ink: #fff3ea;
+  --ink-soft: #e6d6e8;
+  --muted: #a993c2;
+
+  --pink: #ff2e88;
+  --orange: #ff8a3d;
+  --sun: #ffd23f;
+  --teal: #19e3c9;
+  --violet: #8a5cff;
+  --plum: #3b0f4d;
+
+  --sunset: linear-gradient(180deg, #fff6d6, var(--sun) 30%, var(--orange) 55%, var(--pink) 80%);
+
+  --font-display: 'Bungee', system-ui, sans-serif;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-script: 'Yellowtail', cursive;
+  --font-body: 'Outfit', system-ui, sans-serif;
+
+  color-scheme: dark;
+}
+
+/* ---------- Reset / base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Scanlines CRT sutiles sobre todo el sitio */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: repeating-linear-gradient(0deg, rgb(0 0 0 / 0.12) 0 1px, transparent 1px 3px);
+  mix-blend-mode: multiply;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: var(--teal);
+}
+
+:focus-visible {
+  outline: 2px solid var(--sun);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- Utilidades de layout ---------- */
+
+.container {
+  width: min(1180px, 100% - 2rem);
+  margin-inline: auto;
+}
+
+.section {
+  padding: 6rem 0 2rem;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.panel {
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: linear-gradient(160deg, var(--surface), #170d2c);
+  border: 1px solid rgb(255 255 255 / 0.07);
+}
+
+.panel__label {
+  margin: 0 0 0.9rem;
+  font-family: var(--font-pixel);
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--pink);
+  text-transform: uppercase;
+}
+
+.panel__label:not(:first-child) {
+  margin-top: 1.75rem;
+}
+
+/* ---------- Utilidades de texto ---------- */
+
+.kicker {
+  margin: 0;
+  font-family: var(--font-pixel);
+  font-size: 0.7rem;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  text-shadow: 0 0 10px rgb(25 227 201 / 0.6);
+}
+
+.empty {
+  padding: 2rem 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* El scroll al paginar lo maneja collection.ts; sin esto el navegador también "ancla" y suma saltos */
+[data-items] {
+  overflow-anchor: none;
+}

@@ -1,0 +1,42 @@
+---
+import SectionTitle from '../ui/SectionTitle.astro';
+
+interface Props {
+  images: string[];
+  /** Nombre del juego, para el texto alternativo */
+  gameTitle: string;
+}
+const { images, gameTitle } = Astro.props;
+const shots = images.map((src, i) => ({ src, alt: `Captura ${i + 1} de ${gameTitle}` }));
+---
+
+<section class="screenshot-gallery section" aria-labelledby="capturas-title">
+  <SectionTitle id="capturas-title">Capturas</SectionTitle>
+  <ul class="screenshot-gallery__grid">
+    {shots.map((shot) => <li><img class="screenshot-gallery__image" src={shot.src} alt={shot.alt} loading="lazy" /></li>)}
+  </ul>
+</section>
+
+<style>
+  .screenshot-gallery {
+    padding-top: 4rem;
+  }
+
+  .screenshot-gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .screenshot-gallery__image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid var(--surface-2);
+    image-rendering: auto;
+  }
+</style>

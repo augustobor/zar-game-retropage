@@ -1,0 +1,21 @@
+flowchart LR
+    BASE["🟪 layouts/Base.astro<br/>SiteNav · slot · SiteFooter"]
+    BASE --> HOME["📄 index.astro"] & LOG["📄 logros/index.astro"] & GAME["📄 juegos/[id].astro"] & ACH["📄 logros/[id].astro"]
+
+    HOME --> Hero --> Palms & HudStats
+    HOME --> Brief --> Prose & ChipList1[ChipList] & StatBars & Timeline
+    HOME --> GameGrid --> CT1[CollectionToolbar] & GameCard & P1[Pager]
+    GameCard --> PB1[ProgressBar]
+
+    LOG --> PageHeader
+    LOG --> AccountList --> AccountCard --> SL1[StatList]
+    LOG --> AchievementList --> CT2[CollectionToolbar] & AC1[AchievementCard] & P2[Pager]
+
+    GAME --> DH1[DetailHero] --> GameShowcase --> FC1[FloatCard]
+    GAME --> SL2[StatList] & ScreenshotGallery & GameAchievements
+    GameAchievements --> CT3[CollectionToolbar] & AC2[AchievementCard] & P3[Pager]
+
+    ACH --> DH2[DetailHero] --> AchievementShowcase --> FC2[FloatCard]
+    ACH --> SL3[StatList] & RarityMeter & RelatedGame & RelatedAchievements
+    RelatedGame --> GC2[GameCard]
+    RelatedAchievements --> AC3[AchievementCard]

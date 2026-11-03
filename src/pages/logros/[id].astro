@@ -1,0 +1,117 @@
+---
+import Base from '../../layouts/Base.astro';
+import DetailHero from '../../components/detail/DetailHero.astro';
+import AchievementShowcase from '../../components/detail/AchievementShowcase.astro';
+import RarityMeter from '../../components/detail/RarityMeter.astro';
+import RelatedGame from '../../components/detail/RelatedGame.astro';
+import RelatedAchievements from '../../components/detail/RelatedAchievements.astro';
+import SectionTitle from '../../components/ui/SectionTitle.astro';
+import ChipList from '../../components/ui/ChipList.astro';
+import StatList from '../../components/ui/StatList.astro';
+import type { Achievement } from '../../lib/types';
+import { getAchievementList, getAchievementDetail } from '../../lib/data';
+import { profile } from '../../data/profile';
+import { url } from '../../lib/url';
+import { ACHIEVEMENT_TYPES, SOURCE_LABELS, definedStats, formatDateTime, formatNumber, rarityLabel } from '../../lib/format';
+
+const RELATED_COUNT = 4;
+
+/** Una página por logro desbloqueado: /logros/retro-5760/, /logros/steam-1774580-…/ */
+export async function getStaticPaths() {
+  const list = await getAchievementList();
+  return list.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+interface Props {
+  item: Achievement;
+}
+const [{ achievement, game }, list] = await Promise.all([getAchievementDetail(Astro.props.item), getAchievementList()]);
+const linkedIds = new Set(list.map((a) => a.id));
+
+const title = `${achievement.title} · ${achievement.game} · ${profile.handle}`;
+const description = `${achievement.title}: ${achievement.description}`;
+const sourceLabel = SOURCE_LABELS[achievement.source];
+const kicker = `// Logro de ${sourceLabel}`;
+const isRetro = achievement.source === 'retro';
+const typeLabel = achievement.type ? (ACHIEVEMENT_TYPES[achievement.type] ?? achievement.type) : undefined;
+const difficulty =
+  achievement.trueRatio && achievement.points ? `${achievement.trueRatio} (x${(achievement.trueRatio / achievement.points).toFixed(1)} de dificultad)` : undefined;
+const externalHref = isRetro
+  ? `https://retroachievements.org/achievement/${achievement.id.replace('retro-', '')}`
+  : `https://steamcommunity.com/stats/${achievement.gameId.replace('steam-', '')}/achievements`;
+
+const chips = [
+  achievement.points != null ? `${achievement.points} pts` : '',
+  achievement.hardcore ? 'Hardcore' : '',
+  typeLabel ?? '',
+  rarityLabel(achievement.rarity) ?? '',
+].filter(Boolean);
+
+const details = definedStats([
+  { label: 'Juego', value: achievement.game },
+  { label: 'Plataforma', value: achievement.platform },
+  { label: 'Puntos', value: achievement.points },
+  { label: 'Puntos reales (RetroRatio)', value: difficulty },
+  { label: 'Tipo', value: typeLabel },
+  { label: 'Modo', value: isRetro && (achievement.hardcore ? 'Hardcore' : 'Softcore') },
+  { label: 'Desbloqueado', value: formatDateTime(achievement.unlockedAt) },
+  { label: 'Jugadores que lo tienen', value: achievement.awarded != null && formatNumber(achievement.awarded) },
+]);
+
+const hasRarity = achievement.rarity != null;
+const related = (game?.achievements ?? []).filter((a) => a.unlockedAt && a.id !== achievement.id).slice(0, RELATED_COUNT);
+const hasRelated = related.length > 0;
+const relatedTitle = `Más de ${achievement.game}`;
+---
+
+<Base title={title} description={description}>
+  <DetailHero
+    backHref={url('/logros/')}
+    backLabel="Logros"
+    kicker={kicker}
+    title={achievement.title}
+    lead={achievement.description}
+    externalHref={externalHref}
+    externalLabel={`Ver en ${sourceLabel} ↗`}
+  >
+    <AchievementShowcase slot="card" achievement={achievement} />
+    <ChipList items={chips} tone="sun" />
+  </DetailHero>
+
+  <main class="container">
+    <section class="section panels" aria-label="Detalle del logro">
+      <article class="panel">
+        <h2 class="panel__label">Detalles</h2>
+        <StatList items={details} layout="rows" />
+      </article>
+
+      <div class="panels">
+        {
+          hasRarity && (
+            <article class="panel">
+              <h2 class="panel__label">Rareza</h2>
+              <RarityMeter rarity={achievement.rarity!} awarded={achievement.awarded} />
+            </article>
+          )
+        }
+        {
+          game && (
+            <article class="panel">
+              <h2 class="panel__label">Juego</h2>
+              <RelatedGame game={game} />
+            </article>
+          )
+        }
+      </div>
+    </section>
+
+    {
+      hasRelated && (
+        <section class="section" aria-labelledby="relacionados-title">
+          <SectionTitle id="relacionados-title">{relatedTitle}</SectionTitle>
+          <RelatedAchievements achievements={related} linkedIds={linkedIds} />
+        </section>
+      )
+    }
+  </main>
+</Base>

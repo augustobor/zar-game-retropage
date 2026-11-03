@@ -1,0 +1,35 @@
+---
+import GameCard from '../games/GameCard.astro';
+import type { GameDetail, GameProgress } from '../../lib/types';
+
+interface Props {
+  game: GameDetail;
+}
+const { game } = Astro.props;
+
+// GameCard espera el formato del listado: se adapta la ficha
+const card: GameProgress = {
+  id: game.id,
+  source: game.source,
+  title: game.title,
+  platform: game.platform,
+  image: game.icon,
+  art: game.source === 'retro' ? 'icon' : 'banner',
+  unlocked: game.unlocked,
+  total: game.total,
+  hours: game.hours,
+  award: game.award,
+};
+---
+
+<ul class="related-game">
+  <GameCard game={card} />
+</ul>
+
+<style>
+  .related-game {
+    max-width: 320px;
+    padding: 0;
+    margin: 0;
+  }
+</style>

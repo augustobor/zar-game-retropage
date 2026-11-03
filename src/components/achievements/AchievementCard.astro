@@ -1,0 +1,148 @@
+---
+import type { AchievementDetail } from '../../lib/types';
+import { formatDate, formatPercent } from '../../lib/format';
+
+interface Props {
+  achievement: AchievementDetail & { game?: string };
+  /** Valor de data-group para el filtro (plataforma, o desbloqueado/bloqueado) */
+  group: string;
+  /** Si existe la página de detalle, la tarjeta es un link */
+  href?: string;
+  /** Mostrar el nombre del juego (en el listado general sí, dentro de un juego no) */
+  showGame?: boolean;
+  hidden?: boolean;
+}
+const { achievement, group, href, showGame = false, hidden = false } = Astro.props;
+
+const locked = !achievement.unlockedAt;
+const Tag = href ? 'a' : 'div';
+const icon = locked ? (achievement.iconLocked ?? achievement.icon) : achievement.icon;
+const gameName = showGame ? achievement.game : undefined;
+const className = locked ? 'achievement-card achievement-card--locked' : 'achievement-card';
+const sourceLabel = achievement.source === 'steam' ? 'STEAM' : 'RA';
+const sourceClass = `achievement-card__source achievement-card__source--${achievement.source}`;
+const metaText = [
+  achievement.points != null ? `${achievement.points} pts` : null,
+  achievement.rarity != null ? `${formatPercent(achievement.rarity)} lo tiene` : null,
+  locked ? 'Bloqueado' : formatDate(achievement.unlockedAt),
+]
+  .filter(Boolean)
+  .join(' · ');
+---
+
+<li class={className} data-group={group} hidden={hidden}>
+  <Tag class="achievement-card__body" href={href}>
+    {icon ? <img class="achievement-card__icon" src={icon} alt="" width="64" height="64" loading="lazy" /> : <span class="achievement-card__icon achievement-card__icon--empty" aria-hidden="true">★</span>}
+
+    <div>
+      {gameName && <p class="achievement-card__game">{gameName}</p>}
+      <h3 class="achievement-card__title">{achievement.title}</h3>
+      <p class="achievement-card__description">{achievement.description}</p>
+      <p class="achievement-card__meta">
+        <span class={sourceClass}>{sourceLabel}</span>
+        {achievement.hardcore && <span class="achievement-card__hardcore">HARDCORE</span>}
+        <span>{metaText}</span>
+      </p>
+    </div>
+  </Tag>
+</li>
+
+<style>
+  .achievement-card {
+    list-style: none;
+  }
+
+  .achievement-card__body {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 1rem;
+    height: 100%;
+    padding: 1rem;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid rgb(255 255 255 / 0.06);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      translate 0.15s,
+      border-color 0.15s;
+  }
+
+  a.achievement-card__body:hover {
+    translate: 0 -2px;
+    border-color: var(--pink);
+  }
+
+  .achievement-card--locked .achievement-card__body {
+    opacity: 0.55;
+  }
+
+  .achievement-card--locked .achievement-card__icon {
+    filter: grayscale(1);
+  }
+
+  /* ---------- Icono ---------- */
+
+  .achievement-card__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    image-rendering: pixelated;
+    border: 2px solid var(--violet);
+  }
+
+  .achievement-card__icon--empty {
+    display: grid;
+    place-items: center;
+    font-size: 1.6rem;
+    color: var(--sun);
+    background: var(--surface-2);
+  }
+
+  /* ---------- Texto ---------- */
+
+  .achievement-card__game {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .achievement-card__title {
+    margin: 0.15rem 0;
+    font-size: 1rem;
+  }
+
+  .achievement-card__description {
+    margin: 0 0 0.5rem;
+    font-size: 0.88rem;
+    color: var(--ink-soft);
+  }
+
+  .achievement-card__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  .achievement-card__source {
+    padding: 0.1rem 0.4rem;
+    font-family: var(--font-pixel);
+    font-size: 0.5rem;
+    border-radius: 3px;
+    color: var(--bg);
+    background: var(--teal);
+  }
+
+  .achievement-card__source--retro {
+    background: var(--sun);
+  }
+
+  .achievement-card__hardcore {
+    color: var(--pink);
+    font-weight: 700;
+  }
+</style>

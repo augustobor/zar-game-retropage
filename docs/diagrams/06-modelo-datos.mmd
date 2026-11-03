@@ -1,0 +1,44 @@
+classDiagram
+    direction LR
+    class SourceData {
+        source: Source
+        profile: SourceProfile
+        games: GameProgress[]
+        achievements: Achievement[]
+        demo: boolean
+    }
+    class SourceProfile {
+        username, avatar, url
+        points?, status?
+        presence?: Presence
+        lastGame?: LastGame
+    }
+    class GameProgress {
+        id: string
+        title, platform, image
+        unlocked, total, hours?, award?
+        achievementList?
+    }
+    class Achievement {
+        id, gameId
+        title, description, icon
+        unlockedAt, points?, hardcore?
+    }
+    class GameDetail {
+        cover, description, developer
+        genres, released, metacritic?
+        players?, screenshots
+        pointsEarned?, pointsTotal?
+        achievements: AchievementDetail[]
+    }
+    class AchievementDetail {
+        rarity?, awarded?
+        trueRatio?, type?
+        iconLocked?, unlockedAt?
+    }
+    SourceData "1" --> "1" SourceProfile
+    SourceData "1" --> "*" GameProgress
+    SourceData "1" --> "*" Achievement
+    GameProgress ..> GameDetail : getGameDetail(id)
+    GameDetail "1" --> "*" AchievementDetail
+    Achievement ..> AchievementDetail : mismo id

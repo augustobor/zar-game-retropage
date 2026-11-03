@@ -1,0 +1,155 @@
+---
+import StatList from '../ui/StatList.astro';
+import type { SourceData } from '../../lib/types';
+import { formatDate, SOURCE_LABELS } from '../../lib/format';
+
+interface Props {
+  source: SourceData;
+}
+const { source } = Astro.props;
+const { profile, demo, error } = source;
+
+const className = `account-card account-card--${source.source}`;
+const platformLabel = SOURCE_LABELS[source.source];
+const username = profile?.username ?? '—';
+const status = profile?.status;
+const presence = profile?.presence;
+
+const last = profile?.lastGame;
+const lastGame = last && {
+  label: last.playingNow ? '● Jugando ahora' : 'Último juego',
+  title: last.title,
+  image: last.image,
+  imageClass: `account-card__game-art account-card__game-art--${source.source}`,
+  meta: [last.platform, last.playedAt && formatDate(last.playedAt), last.detail].filter(Boolean).join(' · '),
+};
+---
+
+<a class={className} href={profile?.url} target="_blank" rel="noopener">
+  <span class="account-card__platform">{platformLabel}</span>
+  <h3 class="account-card__username">{username}</h3>
+  {status && <small class="account-card__muted">{status}</small>}
+  {demo && <small class="account-card__demo" title={error}>⚠ Datos de demo</small>}
+
+  {
+    lastGame && (
+      <div class="account-card__game">
+        {lastGame.image && <img class={lastGame.imageClass} src={lastGame.image} alt="" loading="lazy" />}
+        <div class="account-card__game-text">
+          <span class="account-card__game-label">{lastGame.label}</span>
+          <strong class="account-card__game-title">{lastGame.title}</strong>
+          <small class="account-card__muted">{lastGame.meta}</small>
+        </div>
+      </div>
+    )
+  }
+
+  {
+    presence && (
+      <div class="account-card__presence">
+        {presence.headline && <p class="account-card__presence-head">{presence.headline}</p>}
+        <StatList items={presence.fields} />
+      </div>
+    )
+  }
+</a>
+
+<style>
+  .account-card {
+    display: grid;
+    align-content: start;
+    gap: 0.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 0 12px 12px 0;
+    background: var(--surface);
+    border-left: 4px solid var(--teal);
+    color: inherit;
+    text-decoration: none;
+    transition: translate 0.15s;
+  }
+
+  .account-card:hover {
+    translate: 0 -2px;
+  }
+
+  .account-card--retro {
+    border-left-color: var(--sun);
+  }
+
+  .account-card__platform {
+    font-family: var(--font-pixel);
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  .account-card__username {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.4rem;
+  }
+
+  .account-card__muted {
+    color: var(--muted);
+  }
+
+  .account-card__demo {
+    color: var(--orange);
+  }
+
+  /* ---------- Último juego ---------- */
+
+  .account-card__game {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed rgb(255 255 255 / 0.1);
+  }
+
+  .account-card__game-text {
+    display: grid;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .account-card__game-art {
+    flex: none;
+    height: 48px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .account-card__game-art--steam {
+    width: 103px;
+  }
+
+  .account-card__game-art--retro {
+    width: 48px;
+    image-rendering: pixelated;
+  }
+
+  .account-card__game-label {
+    font-family: var(--font-pixel);
+    font-size: 0.5rem;
+    color: var(--pink);
+    text-transform: uppercase;
+  }
+
+  .account-card__game-title {
+    font-size: 1rem;
+  }
+
+  /* ---------- Rich Presence ---------- */
+
+  .account-card__presence {
+    margin-top: 0.9rem;
+  }
+
+  .account-card__presence-head {
+    margin: 0 0 0.6rem;
+    color: var(--teal);
+    font-size: 0.95rem;
+  }
+</style>

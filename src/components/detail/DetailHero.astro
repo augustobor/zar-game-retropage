@@ -1,0 +1,133 @@
+---
+interface Props {
+  backHref: string;
+  backLabel: string;
+  kicker: string;
+  title: string;
+  lead?: string;
+  externalHref?: string;
+  externalLabel?: string;
+}
+const { backHref, backLabel, kicker, title, lead, externalHref, externalLabel } = Astro.props;
+const backText = `◀ ${backLabel}`;
+---
+
+<header class="detail-hero">
+  <div class="detail-hero__inner container">
+    <a class="detail-hero__back" href={backHref}>{backText}</a>
+
+    <div class="detail-hero__layout">
+      <div class="detail-hero__card">
+        <slot name="card" />
+      </div>
+
+      <div class="detail-hero__info">
+        <p class="kicker">{kicker}</p>
+        <h1 class="detail-hero__title">{title}</h1>
+        {lead && <p class="detail-hero__lead">{lead}</p>}
+        <slot />
+        {externalHref && <a class="detail-hero__external" href={externalHref} target="_blank" rel="noopener">{externalLabel}</a>}
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .detail-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 6rem 0 3.5rem;
+    background: linear-gradient(180deg, var(--bg) 0%, #2a0f45 40%, #5a1a62 75%, #8e2466 100%);
+    border-bottom: 3px solid var(--orange);
+  }
+
+  /* Grilla synthwave que se desvanece hacia arriba */
+  .detail-hero::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 40%;
+    background:
+      repeating-linear-gradient(90deg, rgb(255 46 136 / 0.3) 0 1px, transparent 1px 60px),
+      repeating-linear-gradient(0deg, rgb(25 227 201 / 0.25) 0 1px, transparent 1px 20px);
+    mask: linear-gradient(transparent, #000);
+  }
+
+  .detail-hero__inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  .detail-hero__back {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  .detail-hero__back:hover {
+    color: var(--sun);
+  }
+
+  .detail-hero__layout {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 3.5rem;
+  }
+
+  .detail-hero__info {
+    display: grid;
+    gap: 1rem;
+    justify-items: start;
+  }
+
+  .detail-hero__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.2rem, 6vw, 4.2rem);
+    line-height: 1;
+    background: var(--sunset);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 4px 0 var(--plum));
+  }
+
+  .detail-hero__lead {
+    margin: 0;
+    max-width: 60ch;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  .detail-hero__external {
+    font-family: var(--font-pixel);
+    font-size: 0.65rem;
+    color: var(--teal);
+    text-decoration: none;
+  }
+
+  .detail-hero__external:hover {
+    color: var(--sun);
+  }
+
+  @media (max-width: 800px) {
+    .detail-hero {
+      padding: 5rem 0 2.5rem;
+    }
+
+    .detail-hero__layout {
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 1.5rem;
+    }
+
+    .detail-hero__back {
+      margin-bottom: 0.5rem;
+    }
+  }
+</style>

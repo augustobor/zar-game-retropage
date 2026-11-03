@@ -1,0 +1,35 @@
+---
+import '../styles/global.css';
+import SiteNav from '../components/site/SiteNav.astro';
+import SiteFooter from '../components/site/SiteFooter.astro';
+import { url } from '../lib/url';
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const faviconHref = url('/favicon.svg');
+const fontsHref =
+  'https://fonts.googleapis.com/css2?family=Bungee&family=Outfit:wght@400;500;700&family=Press+Start+2P&family=Yellowtail&display=swap';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#120a22" />
+    <link rel="icon" type="image/svg+xml" href={faviconHref} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href={fontsHref} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <SiteNav />
+    <slot />
+    <SiteFooter />
+  </body>
+</html>

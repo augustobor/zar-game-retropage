@@ -1,0 +1,54 @@
+---
+import CollectionToolbar from '../collection/CollectionToolbar.astro';
+import Pager from '../collection/Pager.astro';
+import AchievementCard from './AchievementCard.astro';
+import type { Achievement } from '../../lib/types';
+import { sourceOptions } from '../../lib/format';
+import { url } from '../../lib/url';
+
+interface Props {
+  achievements: Achievement[];
+}
+const PAGE_SIZE = 12;
+
+const { achievements } = Astro.props;
+const options = sourceOptions(achievements);
+const cards = achievements.map((achievement, i) => ({
+  achievement,
+  group: achievement.source,
+  href: url(`/logros/${achievement.id}/`),
+  showGame: true,
+  hidden: i >= PAGE_SIZE,
+}));
+---
+
+<section class="achievement-list section" aria-labelledby="lista-title" data-collection data-page-size={PAGE_SIZE}>
+  <h2 class="visually-hidden" id="lista-title">Últimos desbloqueos</h2>
+
+  <CollectionToolbar options={options} label="Filtrar logros por plataforma" searchPlaceholder="Buscar logro o juego…" />
+
+  <ul class="achievement-list__items" data-items>
+    {cards.map((card) => <AchievementCard {...card} />)}
+  </ul>
+
+  <p class="empty" data-empty hidden>No hay logros que coincidan.</p>
+  <Pager label="Páginas de logros" />
+</section>
+
+<script>
+  import '../../scripts/collection';
+</script>
+
+<style>
+  .achievement-list {
+    padding-top: 3rem;
+  }
+
+  .achievement-list__items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+  }
+</style>

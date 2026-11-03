@@ -1,0 +1,70 @@
+---
+import SectionTitle from '../ui/SectionTitle.astro';
+import CollectionToolbar from '../collection/CollectionToolbar.astro';
+import Pager from '../collection/Pager.astro';
+import AchievementCard from '../achievements/AchievementCard.astro';
+import type { GameDetail } from '../../lib/types';
+import { url } from '../../lib/url';
+
+interface Props {
+  game: GameDetail;
+  /** ids de logros que tienen página de detalle */
+  linkedIds: Set<string>;
+}
+const PAGE_SIZE = 12;
+
+const { game, linkedIds } = Astro.props;
+const achievements = game.achievements;
+const unlockedCount = achievements.filter((a) => a.unlockedAt).length;
+const hasAchievements = achievements.length > 0;
+const count = `${unlockedCount}/${achievements.length}`;
+
+const options = [
+  { id: 'all', label: 'Todos', count: achievements.length },
+  { id: 'unlocked', label: 'Desbloqueados', count: unlockedCount },
+  { id: 'locked', label: 'Bloqueados', count: achievements.length - unlockedCount },
+];
+const cards = achievements.map((achievement, i) => ({
+  achievement,
+  group: achievement.unlockedAt ? 'unlocked' : 'locked',
+  href: linkedIds.has(achievement.id) ? url(`/logros/${achievement.id}/`) : undefined,
+  hidden: i >= PAGE_SIZE,
+}));
+---
+
+<section class="game-achievements section" aria-labelledby="logros-juego-title" data-collection data-page-size={PAGE_SIZE}>
+  <SectionTitle id="logros-juego-title" count={count}>Logros</SectionTitle>
+
+  {
+    hasAchievements ? (
+      <>
+        <CollectionToolbar options={options} label="Filtrar logros del juego" searchPlaceholder="Buscar logro…" />
+        <ul class="game-achievements__list" data-items>
+          {cards.map((card) => <AchievementCard {...card} />)}
+        </ul>
+        <p class="empty" data-empty hidden>No hay logros que coincidan.</p>
+        <Pager label="Páginas de logros del juego" />
+      </>
+    ) : (
+      <p class="empty">Este juego no tiene logros disponibles.</p>
+    )
+  }
+</section>
+
+<script>
+  import '../../scripts/collection';
+</script>
+
+<style>
+  .game-achievements {
+    padding-top: 4rem;
+  }
+
+  .game-achievements__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+  }
+</style>
