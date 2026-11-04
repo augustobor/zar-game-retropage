@@ -1,0 +1,60 @@
+---
+import type { Platform } from '../../lib/types';
+
+interface Props {
+  items: Platform[];
+}
+const { items } = Astro.props;
+---
+
+<ul class="platform-list">
+  {
+    items.map((platform) => (
+      <li class="platform-list__item">
+        {platform.icon && <img class="platform-list__icon" src={platform.icon} alt="" width="28" height="28" loading="lazy" />}
+        <span class="platform-list__name">{platform.name}</span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .platform-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0.6rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  .platform-list__item {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    padding: 0.45rem 0.75rem 0.45rem 0.5rem;
+    border: 1px solid var(--teal);
+    border-radius: 10px;
+    background: rgb(25 227 201 / 0.06);
+  }
+
+  .platform-list__icon {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+
+  .platform-list__name {
+    font-size: 0.9rem;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+
+  @media (max-width: 640px) {
+    .platform-list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

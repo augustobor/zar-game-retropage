@@ -21,7 +21,7 @@ const artClass = `game-card__art game-card__art--${game.art}`;
 const initials = game.title.slice(0, 2);
 ---
 
-<li class="game-card" data-group={game.source} hidden={hidden}>
+<li class="game-card" data-group={game.platform} hidden={hidden}>
   <a class="game-card__link" href={href}>
     <div class={artClass}>
       {game.image ? <img class="game-card__image" src={game.image} alt="" loading="lazy" /> : <span aria-hidden="true">{initials}</span>}

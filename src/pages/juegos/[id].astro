@@ -7,7 +7,7 @@ import GameAchievements from '../../components/detail/GameAchievements.astro';
 import ChipList from '../../components/ui/ChipList.astro';
 import StatList from '../../components/ui/StatList.astro';
 import type { GameProgress } from '../../lib/types';
-import { getGames, getGameDetail, getAchievementList } from '../../lib/data';
+import { getGames, getGameDetail } from '../../lib/data';
 import { profile } from '../../data/profile';
 import { url } from '../../lib/url';
 import { AWARD_LABELS, SOURCE_LABELS, definedStats, formatNumber, formatRelease, percent } from '../../lib/format';
@@ -21,9 +21,8 @@ export async function getStaticPaths() {
 interface Props {
   gameId: GameProgress['id'];
 }
-const [game, list] = await Promise.all([getGameDetail(Astro.props.gameId), getAchievementList()]);
+const game = await getGameDetail(Astro.props.gameId);
 if (!game) return Astro.redirect(url('/#juegos'));
-const linkedIds = new Set(list.map((a) => a.id));
 
 const title = `${game.title} · ${profile.handle}`;
 const description = game.description ?? `Progreso de ${profile.handle} en ${game.title} (${game.platform}).`;
@@ -35,20 +34,20 @@ const chips = awardLabel ? [...game.genres, awardLabel] : game.genres;
 const hasScreenshots = game.screenshots.length > 0;
 
 const facts = definedStats([
-  { label: 'Plataforma', value: game.platform },
-  { label: 'Desarrollador', value: game.developer },
-  { label: 'Distribuidor', value: game.publisher },
-  { label: 'Género', value: game.genres.join(', ') },
-  { label: 'Lanzamiento', value: formatRelease(game.released) },
+  { icon: '🎮', label: 'Plataforma', value: game.platform },
+  { icon: '🛠️', label: 'Desarrollador', value: game.developer },
+  { icon: '🏢', label: 'Distribuidor', value: game.publisher },
+  { icon: '🏷️', label: 'Género', value: game.genres.join(', ') },
+  { icon: '📅', label: 'Lanzamiento', value: formatRelease(game.released) },
 ]);
 
 const ratings = definedStats([
-  { label: 'Metacritic', value: game.metacritic },
-  { label: 'Jugadores en RetroAchievements', value: game.players && formatNumber(game.players) },
-  { label: 'Logros', value: game.total > 0 && `${game.unlocked} de ${game.total} (${percent(game.unlocked, game.total)}%)` },
-  { label: 'Puntos', value: game.pointsTotal && `${formatNumber(game.pointsEarned ?? 0)} de ${formatNumber(game.pointsTotal)}` },
-  { label: 'Horas jugadas', value: game.hours && `${game.hours.toLocaleString('es-AR')} h` },
-  { label: 'Distinción', value: awardLabel },
+  { icon: '⭐', label: 'Metacritic', value: game.metacritic },
+  { icon: '👥', label: 'Jugadores en RA', value: game.players && formatNumber(game.players) },
+  { icon: '🏆', label: 'Logros', value: game.total > 0 && `${game.unlocked} de ${game.total} (${percent(game.unlocked, game.total)}%)` },
+  { icon: '💎', label: 'Puntos', value: game.pointsTotal && `${formatNumber(game.pointsEarned ?? 0)} de ${formatNumber(game.pointsTotal)}` },
+  { icon: '⏱️', label: 'Horas jugadas', value: game.hours && `${game.hours.toLocaleString('es-AR')} h` },
+  { icon: '🎖️', label: 'Distinción', value: awardLabel },
 ]);
 ---
 
@@ -70,15 +69,15 @@ const ratings = definedStats([
     <section class="section panels" aria-label="Ficha del juego">
       <article class="panel">
         <h2 class="panel__label">Ficha</h2>
-        <StatList items={facts} layout="rows" />
+        <StatList items={facts} layout="inline" />
       </article>
       <article class="panel">
         <h2 class="panel__label">Valoración y progreso</h2>
-        <StatList items={ratings} layout="rows" />
+        <StatList items={ratings} layout="inline" />
       </article>
     </section>
 
     {hasScreenshots && <ScreenshotGallery images={game.screenshots} gameTitle={game.title} />}
-    <GameAchievements game={game} linkedIds={linkedIds} />
+    <GameAchievements game={game} />
   </main>
 </Base>

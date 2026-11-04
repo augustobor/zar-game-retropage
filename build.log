@@ -1,0 +1,105 @@
+
+> portfolio-retro-gamer@0.1.0 build
+> astro build
+
+[2m23:16:09[22m [34m[vite][39m Re-optimizing dependencies because vite config has changed
+[2m23:16:09[22m [34m[content][39m Syncing content
+[2m23:16:09[22m [34m[content][39m Astro config changed
+[2m23:16:09[22m [34m[content][39m Clearing content store
+[2m23:16:09[22m [34m[content][39m Synced content
+[2m23:16:09[22m [34m[types][39m Generated [2m285ms[22m
+[2m23:16:09[22m [34m[build][39m output: [34m"static"[39m
+[2m23:16:09[22m [34m[build][39m mode: [34m"static"[39m
+[2m23:16:09[22m [34m[build][39m directory: [34mD:\Proyectos, software y webadas\portfolio-retro-gamer\dist\[39m
+[2m23:16:09[22m [34m[build][39m Collecting build info...
+[2m23:16:09[22m [34m[build][39m [32m✓ Completed in 308ms.[39m
+[2m23:16:14[22m [34m[build][39m Building static entrypoints...
+[2m23:16:15[22m [34m[vite][39m [32m✓ built in 1.21s[39m
+[2m23:16:15[22m [34m[build][39m [32m✓ Completed in 1.24s.[39m
+
+[42m[30m building client (vite) [39m[49m
+[2m23:16:15[22m [34m[vite][39m transforming...
+[2m23:16:15[22m [34m[vite][39m [32m✓[39m 6 modules transformed.
+[2m23:16:15[22m [34m[vite][39m rendering chunks...
+[2m23:16:15[22m [34m[vite][39m computing gzip size...
+[2m23:16:15[22m [34m[vite][39m [2mdist/[22m[36m_astro/GameAchievements.astro_astro_type_script_index_0_lang.DrF9ZjNw.js  [39m[1m[2m0.08 kB[22m[1m[22m[2m │ gzip: 0.09 kB[22m
+[2m23:16:15[22m [34m[vite][39m [2mdist/[22m[36m_astro/GameGrid.astro_astro_type_script_index_0_lang.DrF9ZjNw.js          [39m[1m[2m0.08 kB[22m[1m[22m[2m │ gzip: 0.09 kB[22m
+[2m23:16:15[22m [34m[vite][39m [2mdist/[22m[36m_astro/AchievementList.astro_astro_type_script_index_0_lang.CRdNjPfq.js   [39m[1m[2m1.91 kB[22m[1m[22m[2m │ gzip: 1.01 kB[22m
+[2m23:16:15[22m [34m[vite][39m [32m✓ built in 31ms[39m
+
+[42m[30m generating static routes [39m[49m
+[2m23:16:15[22m [32m▶[39m src/pages/index.astro
+[2m23:16:15[22m   [34m└─[39m [2m/index.html[22m [31m(+6.32s)[39m 
+[2m23:16:22[22m [32m▶[39m src/pages/juegos/[id].astro
+[2m23:16:22[22m   [34m├─[39m [2m/juegos/retro-534/index.html[22m [31m(+1.49s)[39m 
+[2m23:16:23[22m   [34m├─[39m [2m/juegos/retro-5252/index.html[22m [31m(+1.50s)[39m 
+[2m23:16:25[22m   [34m├─[39m [2m/juegos/retro-2739/index.html[22m [31m(+1.59s)[39m 
+[2m23:16:26[22m   [34m├─[39m [2m/juegos/retro-2477/index.html[22m [31m(+1.46s)[39m 
+[2m23:16:28[22m   [34m├─[39m [2m/juegos/retro-770/index.html[22m [31m(+1.46s)[39m 
+[2m23:16:29[22m   [34m├─[39m [2m/juegos/retro-1556/index.html[22m [31m(+1.52s)[39m 
+[2m23:16:31[22m   [34m├─[39m [2m/juegos/retro-1474/index.html[22m [31m(+1.51s)[39m 
+[2m23:16:32[22m   [34m├─[39m [2m/juegos/retro-1462/index.html[22m [31m(+2.83s)[39m 
+[2m23:16:35[22m   [34m├─[39m [2m/juegos/retro-16669/index.html[22m [31m(+1.74s)[39m 
+[2m23:16:37[22m   [34m├─[39m [2m/juegos/retro-10433/index.html[22m [31m(+597ms)[39m 
+[2m23:16:37[22m   [34m├─[39m [2m/juegos/retro-20635/index.html[22m [31m(+1.25s)[39m 
+[2m23:16:39[22m   [34m├─[39m [2m/juegos/retro-3618/index.html[22m [31m(+1.51s)[39m 
+[2m23:16:40[22m   [34m├─[39m [2m/juegos/retro-1/index.html[22m [31m(+1.49s)[39m 
+[2m23:16:42[22m   [34m├─[39m [2m/juegos/retro-21/index.html[22m [31m(+1.47s)[39m 
+[2m23:16:43[22m   [34m├─[39m [2m/juegos/retro-5747/index.html[22m [31m(+1.51s)[39m 
+[2m23:16:44[22m   [34m├─[39m [2m/juegos/retro-692/index.html[22m [31m(+1.63s)[39m 
+[2m23:16:46[22m   [34m├─[39m [2m/juegos/retro-13444/index.html[22m [31m(+1.55s)[39m 
+[2m23:16:48[22m   [34m├─[39m [2m/juegos/retro-1446/index.html[22m [31m(+1.36s)[39m 
+[2m23:16:49[22m   [34m├─[39m [2m/juegos/retro-4720/index.html[22m [31m(+2.73s)[39m 
+[2m23:16:52[22m   [34m├─[39m [2m/juegos/retro-1574/index.html[22m[detalle] Battletoads and Double Dragon: The Ultimate Team: HTTP 429 (Retry-After: 600s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=1574&a=1
+ [2m(+227ms)[22m 
+[2m23:16:52[22m   [34m├─[39m [2m/juegos/retro-6845/index.html[22m[detalle] Star Wars - Episode II: Attack of the Clones: HTTP 429 (Retry-After: 598s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=6845&a=1
+ [31m(+1.33s)[39m 
+[2m23:16:53[22m   [34m├─[39m [2m/juegos/retro-1394/index.html[22m[detalle] Judge Dredd: HTTP 429 (Retry-After: 597s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=1394&a=1
+ [31m(+1.53s)[39m 
+[2m23:16:55[22m   [34m├─[39m [2m/juegos/retro-9720/index.html[22m[detalle] Drake & Josh: HTTP 429 (Retry-After: 595s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=9720&a=1
+ [31m(+1.47s)[39m 
+[2m23:16:56[22m   [34m├─[39m [2m/juegos/retro-5535/index.html[22m[detalle] Crash Bandicoot 2: N-Tranced: HTTP 429 (Retry-After: 594s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=5535&a=1
+ [31m(+1.49s)[39m 
+[2m23:16:58[22m   [34m├─[39m [2m/juegos/retro-10360/index.html[22m[detalle] San Francisco Rush: Extreme Racing: HTTP 429 (Retry-After: 592s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=10360&a=1
+ [31m(+1.54s)[39m 
+[2m23:16:59[22m   [34m├─[39m [2m/juegos/retro-693/index.html[22m[detalle] Donkey Kong Land: HTTP 429 (Retry-After: 591s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=693&a=1
+ [31m(+1.47s)[39m 
+[2m23:17:01[22m   [34m├─[39m [2m/juegos/retro-706/index.html[22m[detalle] Kirby's Dream Land: HTTP 429 (Retry-After: 589s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=706&a=1
+ [31m(+1.56s)[39m 
+[2m23:17:02[22m   [34m├─[39m [2m/juegos/retro-526/index.html[22m[detalle] Crash Bandicoot: The Huge Adventure: HTTP 429 (Retry-After: 588s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=526&a=1
+ [31m(+1.43s)[39m 
+[2m23:17:04[22m   [34m├─[39m [2m/juegos/retro-4486/index.html[22m[detalle] Adventure Island II: Aliens in Paradise: HTTP 429 (Retry-After: 586s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=4486&a=1
+ [31m(+1.49s)[39m 
+[2m23:17:05[22m   [34m├─[39m [2m/juegos/retro-707/index.html[22m[detalle] Kirby's Dream Land 2: HTTP 429 (Retry-After: 585s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=707&a=1
+ [31m(+1.50s)[39m 
+[2m23:17:07[22m   [34m├─[39m [2m/juegos/retro-540/index.html[22m[detalle] Super Mario Land 2: 6 Golden Coins: HTTP 429 (Retry-After: 583s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=540&a=1
+ [31m(+1.50s)[39m 
+[2m23:17:08[22m   [34m├─[39m [2m/juegos/retro-10432/index.html[22m[detalle] Crash Bandicoot 2: Cortex Strikes Back: HTTP 429 (Retry-After: 582s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=10432&a=1
+ [31m(+1.50s)[39m 
+[2m23:17:10[22m   [34m├─[39m [2m/juegos/retro-669/index.html[22m[detalle] The Legend of Zelda: Link's Awakening: HTTP 429 (Retry-After: 580s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=669&a=1
+ [31m(+1.53s)[39m 
+[2m23:17:11[22m   [34m├─[39m [2m/juegos/retro-1965/index.html[22m[detalle] Solstice: The Quest for the Staff of Demnos: HTTP 429 (Retry-After: 579s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=1965&a=1
+ [31m(+1.48s)[39m 
+[2m23:17:13[22m   [34m├─[39m [2m/juegos/retro-508/index.html[22m[detalle] Tetris: HTTP 429 (Retry-After: 577s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=508&a=1
+ [31m(+1.48s)[39m 
+[2m23:17:14[22m   [34m├─[39m [2m/juegos/retro-19044/index.html[22m[detalle] Crash Twinsanity: HTTP 429 (Retry-After: 576s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=19044&a=1
+ [31m(+1.52s)[39m 
+[2m23:17:16[22m   [34m├─[39m [2m/juegos/retro-6118/index.html[22m[detalle] The Grim Adventures of Billy & Mandy: HTTP 429 (Retry-After: 574s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=6118&a=1
+ [31m(+1.49s)[39m 
+[2m23:17:17[22m   [34m├─[39m [2m/juegos/retro-17034/index.html[22m[detalle] ~Homebrew~ The Binding of Isaac: Game Boy Edition: HTTP 429 (Retry-After: 573s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=17034&a=1
+ [31m(+1.49s)[39m 
+[2m23:17:19[22m   [34m├─[39m [2m/juegos/retro-10264/index.html[22m[detalle] Mario Party 2: HTTP 429 (Retry-After: 571s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=10264&a=1
+ [31m(+1.49s)[39m 
+[2m23:17:20[22m   [34m├─[39m [2m/juegos/retro-19266/index.html[22m[detalle] ObsCure: HTTP 429 (Retry-After: 570s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=19266&a=1
+ [31m(+1.51s)[39m 
+[2m23:17:22[22m   [34m├─[39m [2m/juegos/retro-682/index.html[22m[detalle] Alleyway: HTTP 429 (Retry-After: 568s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=682&a=1
+ [31m(+1.50s)[39m 
+[2m23:17:23[22m   [34m├─[39m [2m/juegos/retro-6298/index.html[22m[detalle] Battle City: HTTP 429 (Retry-After: 567s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=6298&a=1
+ [31m(+1.50s)[39m 
+[2m23:17:25[22m   [34m├─[39m [2m/juegos/retro-11402/index.html[22m[detalle] Bugs Bunny & Taz: Time Busters: HTTP 429 (Retry-After: 565s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=11402&a=1
+ [31m(+1.53s)[39m 
+[2m23:17:26[22m   [34m├─[39m [2m/juegos/retro-504/index.html[22m[detalle] Super Mario Land: HTTP 429 (Retry-After: 564s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=504&a=1
+ [31m(+1.49s)[39m 
+[2m23:17:28[22m   [34m├─[39m [2m/juegos/retro-3124/index.html[22m[detalle] LEGO Star Wars II: The Original Trilogy: HTTP 429 (Retry-After: 562s) en https://retroachievements.org/API/API_GetGameInfoAndUserProgress.php?y=***&u=ElZar&g=3124&a=1
+ [31m(+1.59s)[39m 
+[2m23:17:29[22m   [34m├─[39m [2m/juegos/retro-724/index.html[22m

@@ -3,21 +3,26 @@ import type { AchievementDetail } from '../../lib/types';
 import { formatDate, formatPercent } from '../../lib/format';
 
 interface Props {
-  achievement: AchievementDetail & { game?: string };
+  achievement: AchievementDetail;
   /** Valor de data-group para el filtro (plataforma, o desbloqueado/bloqueado) */
   group: string;
   /** Si existe la página de detalle, la tarjeta es un link */
   href?: string;
-  /** Mostrar el nombre del juego (en el listado general sí, dentro de un juego no) */
+  /** Mostrar a qué juego pertenece (en el listado general sí; dentro de la página del juego es redundante) */
   showGame?: boolean;
   hidden?: boolean;
 }
-const { achievement, group, href, showGame = false, hidden = false } = Astro.props;
+const { achievement, group, href, showGame = true, hidden = false } = Astro.props;
 
 const locked = !achievement.unlockedAt;
 const Tag = href ? 'a' : 'div';
 const icon = locked ? (achievement.iconLocked ?? achievement.icon) : achievement.icon;
-const gameName = showGame ? achievement.game : undefined;
+const game = showGame && {
+  name: achievement.game,
+  icon: achievement.gameIcon,
+  iconClass: `achievement-card__game-icon achievement-card__game-icon--${achievement.source}`,
+  platform: achievement.platform,
+};
 const className = locked ? 'achievement-card achievement-card--locked' : 'achievement-card';
 const sourceLabel = achievement.source === 'steam' ? 'STEAM' : 'RA';
 const sourceClass = `achievement-card__source achievement-card__source--${achievement.source}`;
@@ -35,7 +40,6 @@ const metaText = [
     {icon ? <img class="achievement-card__icon" src={icon} alt="" width="64" height="64" loading="lazy" /> : <span class="achievement-card__icon achievement-card__icon--empty" aria-hidden="true">★</span>}
 
     <div>
-      {gameName && <p class="achievement-card__game">{gameName}</p>}
       <h3 class="achievement-card__title">{achievement.title}</h3>
       <p class="achievement-card__description">{achievement.description}</p>
       <p class="achievement-card__meta">
@@ -44,6 +48,16 @@ const metaText = [
         <span>{metaText}</span>
       </p>
     </div>
+
+    {
+      game && (
+        <p class="achievement-card__game">
+          {game.icon && <img class={game.iconClass} src={game.icon} alt="" loading="lazy" />}
+          <span class="achievement-card__game-name">{game.name}</span>
+          <span class="achievement-card__game-platform">{game.platform}</span>
+        </p>
+      )
+    }
   </Tag>
 </li>
 
@@ -55,7 +69,8 @@ const metaText = [
   .achievement-card__body {
     display: grid;
     grid-template-columns: 64px 1fr;
-    gap: 1rem;
+    grid-template-rows: 1fr auto;
+    gap: 0.75rem 1rem;
     height: 100%;
     padding: 1rem;
     border-radius: 12px;
@@ -99,13 +114,53 @@ const metaText = [
     background: var(--surface-2);
   }
 
-  /* ---------- Texto ---------- */
+  /* ---------- Juego al que pertenece (franja inferior) ---------- */
 
   .achievement-card__game {
+    grid-column: 1 / -1;
+    align-self: end;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     margin: 0;
-    font-size: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px dashed rgb(255 255 255 / 0.1);
+    font-size: 0.8rem;
+    min-width: 0;
+  }
+
+  .achievement-card__game-icon {
+    flex: none;
+    height: 24px;
+    border-radius: 4px;
+    object-fit: cover;
+  }
+
+  .achievement-card__game-icon--retro {
+    width: 24px;
+    image-rendering: pixelated;
+  }
+
+  .achievement-card__game-icon--steam {
+    width: 64px;
+  }
+
+  .achievement-card__game-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--teal);
+    font-weight: 500;
+  }
+
+  .achievement-card__game-platform {
+    flex: none;
+    margin-left: auto;
+    font-size: 0.7rem;
     color: var(--muted);
   }
+
+  /* ---------- Texto ---------- */
 
   .achievement-card__title {
     margin: 0.15rem 0;

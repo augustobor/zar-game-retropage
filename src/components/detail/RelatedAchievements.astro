@@ -5,14 +5,14 @@ import { url } from '../../lib/url';
 
 interface Props {
   achievements: AchievementDetail[];
-  linkedIds: Set<string>;
 }
-const { achievements, linkedIds } = Astro.props;
+const { achievements } = Astro.props;
 
 const cards = achievements.map((achievement) => ({
   achievement,
   group: achievement.source,
-  href: linkedIds.has(achievement.id) ? url(`/logros/${achievement.id}/`) : undefined,
+  href: url(`/logros/${achievement.id}/`),
+  showGame: false,
 }));
 ---
 

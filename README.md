@@ -40,7 +40,7 @@ Un portfolio gamer **estático**: HTML + CSS + un poquito de JS. Nada de servido
 
 | Página | Ruta | Qué muestra |
 |---|---|---|
-| 🏠 Home | `/` | Hero synthwave, **Brief** (bio, hoja de personaje, timeline) y **Juegos** paginados |
+| 🏠 Home | `/` | Hero synthwave, **Brief** (plataformas, favoritos, timeline) y **Juegos** paginados |
 | 🏆 Logros | `/logros/` | Cuentas de Steam/RA (último juego, Rich Presence) + todos los logros con filtro, buscador y paginación |
 | 🎲 Juego | `/juegos/:id/` | Tarjeta flotante con la portada, ficha, valoración, capturas y **todos** los logros del juego |
 | ⭐ Logro | `/logros/:id/` | Medalla flotante, detalles, rareza, juego y logros relacionados |
@@ -82,7 +82,7 @@ Archivo `.env` (no se sube al repo). Plantilla en [`.env.example`](.env.example)
 | `RA_API_KEY` | ✅ | — | Web API key de RA ([Settings → Keys](https://retroachievements.org/settings)) |
 | `STEAM_ID` | ✅ | — | SteamID64 (17 dígitos) o URL personalizada |
 | `STEAM_API_KEY` | ➖ | — | Opcional. Con key se ven **todos** los juegos y la fecha de última sesión |
-| `MAX_ACHIEVEMENTS` | ➖ | `500` | Máximo de logros publicados (= páginas de logro) |
+| `MAX_ACHIEVEMENTS` | ➖ | `500` | Máximo de logros en el listado de `/logros/` (las páginas de detalle existen para todos) |
 | `RECENT_MINUTES` | ➖ | `1051200` (2 años) | Ventana de logros recientes de RA. 1 día = `1440` |
 
 > 🕹️ ↑ ↑ ↓ ↓ ← → ← → B A — el código Konami no desbloquea nada acá, pero las keys sí.
@@ -138,7 +138,7 @@ Se engancha a cualquier sección con `data-collection`. El HTML ya sale del buil
 | Detalle | Cómo |
 |---|---|
 | 🔎 Búsqueda | Sin tildes ni mayúsculas (`NFD` + `toLowerCase`). El texto de cada tarjeta se normaliza una sola vez |
-| 🏷️ Filtro | Genérico por `data-group`: plataforma (`steam` / `retro`) o estado (`unlocked` / `locked`) |
+| 🏷️ Filtro | Genérico por `data-group`: plataforma (`Game Boy`, `PlayStation 2`, `PC · Steam`…, con su icono) o estado (`unlocked` / `locked`) |
 | 📜 Scroll | Al paginar **no** salta al encabezado: se compensa la diferencia de alto entre páginas |
 | ♿ Accesibilidad | Filtros con `aria-pressed`, paginador con `aria-current="page"` |
 
@@ -220,7 +220,7 @@ portfolio-retro-gamer/
 
 | Archivo | Qué es |
 |---|---|
-| [`profile.ts`](src/data/profile.ts) | Handle, tagline, bio, stats RPG, plataformas, favoritos, timeline y `steamGames` (appids extra para Steam sin key). **Es el único archivo que hay que tocar para cambiar textos** |
+| [`profile.ts`](src/data/profile.ts) | Handle, tagline, bio (oculta por ahora), favoritos, timeline, `steamGames` (appids extra para Steam sin key), `platforms` (solo extras: las plataformas salen solas de Steam + las consolas con progreso en RA, con su icono) y `hiddenPlatforms`. **Es el único archivo que hay que tocar para cambiar textos** |
 
 ### 🏗️ `src/lib/` — lógica de build
 
@@ -231,7 +231,7 @@ portfolio-retro-gamer/
 | [`http.ts`](src/lib/http.ts) | `get()` con timeout y **enmascarado de keys**, `HttpError`, `createRateLimiter`, `withRetry` (respeta `Retry-After`), `decodeEntities` |
 | [`retroachievements.ts`](src/lib/retroachievements.ts) | `getRetroData()` (perfil, logros recientes, progreso, último juego) y `getRetroGameDetail()` (ficha + todos los logros con rareza) |
 | [`steam.ts`](src/lib/steam.ts) | `getSteamData()` vía XML público o Web API, `getSteamGameDetail()` (tienda + rareza global), `steamAchievementId()` |
-| [`presence.ts`](src/lib/presence.ts) | Parsea el Rich Presence de RA: `"Samus is in Norfair \| Energy: [177/399]"` → titular + campos |
+| [`retroachievementsPresence.ts`](src/lib/retroachievementsPresence.ts) | Parsea el Rich Presence de RA: `"Samus is in Norfair \| Energy: [177/399]"` → titular + campos |
 | [`details.ts`](src/lib/details.ts) | `buildGameDetail()`: elige la fuente y arma una ficha básica si la API falla |
 | [`data.ts`](src/lib/data.ts) | **Punto de entrada para las páginas.** Caché por clave (`cached`), `getProfileData`, `getGames`, `getGameDetail`, `getAchievementList`, `getAchievementDetail` |
 | [`demo.ts`](src/lib/demo.ts) | Datos de relleno cuando faltan keys o una fuente falla |
@@ -252,7 +252,7 @@ portfolio-retro-gamer/
 | [`index.astro`](src/pages/index.astro) | `/` | Hero + Brief + GameGrid |
 | [`logros/index.astro`](src/pages/logros/index.astro) | `/logros/` | AccountList + AchievementList |
 | [`juegos/[id].astro`](src/pages/juegos/[id].astro) | `/juegos/:id/` | `getStaticPaths` lista los juegos; cada página pide **su** ficha |
-| [`logros/[id].astro`](src/pages/logros/[id].astro) | `/logros/:id/` | `getStaticPaths` lista los logros; cada página pide la ficha de su juego |
+| [`logros/[id].astro`](src/pages/logros/[id].astro) | `/logros/:id/` | `getStaticPaths` lista **todos** los logros de todos los juegos (desbloqueados o no), así cualquier tarjeta abre su detalle |
 
 ### 🧩 `src/components/`
 
@@ -275,7 +275,7 @@ portfolio-retro-gamer/
 | `Hero` | Cielo synthwave, sol rayado, piso animado, título y tarjeta con avatar | `retro`, `steam` |
 | `Palms` | SVG de palmeras 🌴 (decorativo, `aria-hidden`) | `class?` |
 | `HudStats` | Los 4 números del HUD (logros, puntos RA, horas, juegos) | `items` |
-| `Brief` | Sección 01: bio, plataformas, favoritos, hoja de personaje y timeline | — (lee `profile.ts`) |
+| `Brief` | Sección 01: plataformas, favoritos y timeline (la biografía está oculta por ahora) | `platforms` |
 
 </details>
 
@@ -295,7 +295,7 @@ portfolio-retro-gamer/
 | Componente | Qué renderiza | Props |
 |---|---|---|
 | `AchievementList` | Listado general paginado (12 por página) | `achievements` |
-| `AchievementCard` | `<li>` con insignia, título, descripción, puntos, rareza y fecha. Modo bloqueado en gris. Es link si existe la página | `achievement`, `group`, `href?`, `showGame?`, `hidden?` |
+| `AchievementCard` | `<li>` con insignia, título, descripción, puntos, rareza, fecha y una franja con el **juego al que pertenece** (icono, nombre y plataforma). Modo bloqueado en gris. Es link si existe la página | `achievement`, `group`, `href?`, `showGame?`, `hidden?` |
 
 </details>
 
@@ -342,9 +342,9 @@ portfolio-retro-gamer/
 | Componente | Qué renderiza | Props |
 |---|---|---|
 | `SectionTitle` | `<h2>` con degradé, índice y contador opcionales | `id?`, `index?`, `count?` |
-| `Prose` | Párrafos de texto | `paragraphs` |
+| `Prose` | Párrafos de texto (hoy sin uso: es el de la biografía oculta) | `paragraphs` |
 | `ChipList` | Lista de pastillas | `items`, `tone?` |
-| `StatBars` | Barras RPG 0–100 (`role="meter"`) | `items` |
+| `PlatformList` | Plataformas con icono, nombre y cantidad de juegos | `items` (`Platform[]`) |
 | `StatList` | `<dl>` de dato/valor en cajas tipo textfield | `items`, `layout?` (`fields` \| `rows`) |
 | `ProgressBar` | Barra de progreso (`role="progressbar"`) | `value`, `label`, `size?` |
 | `Timeline` | `<ol>` de hitos | `items` |
@@ -361,11 +361,11 @@ portfolio-retro-gamer/
 ---
 // 1️⃣ FRONTMATTER — lógica. Corre en el build.
 //    Imports, props, cálculos y listas ya preparadas ("view model").
-const { bio, platforms } = profile;
+const { favorites } = profile;
 ---
 
 <!-- 2️⃣ HTML — solo markup. Recibe valores listos, sin lógica. -->
-<ChipList items={platforms} />
+<ChipList items={favorites} tone="orange" />
 
 <script>
   // 3️⃣ (opcional) JS de cliente: solo imports de src/scripts/
@@ -374,7 +374,7 @@ const { bio, platforms } = profile;
 
 <style>
   /* 4️⃣ CSS con alcance limitado al componente */
-  .brief__grid { display: grid; }
+  .game-grid__list { display: grid; }
 </style>
 ```
 
@@ -384,7 +384,8 @@ const { bio, platforms } = profile;
 | 📋 **Las listas se pasan armadas** a un componente (`<ChipList items={platforms} />`) | El único `.map()` vive dentro del átomo que renderiza la lista. Es la forma de iterar de Astro (como `v-for` en Vue) |
 | 🎨 **`<style>` con alcance** al final de cada componente | Astro agrega `data-astro-cid-*`: el CSS de un componente no pisa a otro |
 | 🏷️ **Clases BEM**: `bloque__elemento--modificador` | Se entiende qué estila cada regla, aun con alcance |
-| 🌐 **Lo global en `global.css`**: tokens (`--pink`, `--sun`…), reset y utilidades (`.container`, `.panel`, `.kicker`, `.visually-hidden`) | Una sola fuente de colores y tipografías |
+| 🌐 **Lo global en `global.css`**: tokens (`--pink`, `--sun`…), reset y utilidades (`.container`, `.panel`, `.kicker`, `.synthwave-grid`, `.visually-hidden`, `@keyframes blink`) | Una sola fuente de colores y tipografías; nada de CSS copiado entre componentes |
+| 📦 **CSS en archivos compartidos** (`inlineStylesheets: 'never'` en `astro.config.mjs`) | Con miles de páginas de logro, copiar el CSS en cada HTML duplicaba el peso del sitio |
 | 🧷 **`:global()`** solo para elementos creados por JS | Esos nodos no reciben el atributo de alcance |
 | ♿ **Semántica**: un `<h1>` por página, `h2` → `h3` sin saltos, `<section aria-labelledby>`, listas reales (`ul`/`ol`/`dl`), `<figure>`/`<figcaption>` | Lectores de pantalla y SEO felices |
 | 📱 **Responsive**: los ajustes de celular van en `@media (max-width: 640px)` dentro de cada componente | Probado en iPhone (375 px): sin scroll horizontal, grilla de juegos en 2 columnas y tarjeta flotante más chica |

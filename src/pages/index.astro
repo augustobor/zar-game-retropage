@@ -3,11 +3,15 @@ import Base from '../layouts/Base.astro';
 import Hero from '../components/home/Hero.astro';
 import Brief from '../components/home/Brief.astro';
 import GameGrid from '../components/games/GameGrid.astro';
-import { getProfileData } from '../lib/data';
+import { getProfileData, getPlatforms, getPlatformIcons } from '../lib/data';
 import { profile } from '../data/profile';
 
 // Se ejecuta solo en el build: las keys quedan del lado del servidor.
-const { retro, steam } = await getProfileData();
+const [{ retro, steam }, platforms, platformIcons] = await Promise.all([
+  getProfileData(),
+  getPlatforms(),
+  getPlatformIcons(),
+]);
 const games = [...retro.games, ...steam.games];
 const title = `${profile.handle} · Perfil gamer`;
 const description = `${profile.handle} — ${profile.tagline}. Logros de Steam y RetroAchievements.`;
@@ -16,7 +20,7 @@ const description = `${profile.handle} — ${profile.tagline}. Logros de Steam y
 <Base title={title} description={description}>
   <Hero retro={retro} steam={steam} />
   <main>
-    <Brief />
-    <GameGrid games={games} />
+    <Brief platforms={platforms} />
+    <GameGrid games={games} platformIcons={platformIcons} />
   </main>
 </Base>

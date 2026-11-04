@@ -1,14 +1,18 @@
 ---
-
 export interface Stat {
   label: string;
   value: string;
+  /** Emoji que hace de viñeta (se usa en el layout 'inline') */
+  icon?: string;
 }
 
 interface Props {
   items: Stat[];
-  /** 'fields' = cajas tipo textfield en grilla; 'rows' = una por renglón */
-  layout?: 'fields' | 'rows';
+  /**
+   * 'fields' = cajas tipo textfield en grilla (Rich Presence)
+   * 'inline' = "🎮 Clave ······ valor" en una sola línea (fichas de juego y logro)
+   */
+  layout?: 'fields' | 'inline';
 }
 const { items, layout = 'fields' } = Astro.props;
 const className = `stat-list stat-list--${layout}`;
@@ -18,7 +22,10 @@ const className = `stat-list stat-list--${layout}`;
   {
     items.map((item) => (
       <div class="stat-list__item">
-        <dt class="stat-list__label">{item.label}</dt>
+        <dt class="stat-list__label">
+          {item.icon && <span class="stat-list__icon" aria-hidden="true">{item.icon}</span>}
+          {item.label}
+        </dt>
         <dd class="stat-list__value">{item.value}</dd>
       </div>
     ))
@@ -34,11 +41,6 @@ const className = `stat-list stat-list--${layout}`;
 
   .stat-list--fields {
     grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-  }
-
-  .stat-list--rows {
-    grid-template-columns: 1fr;
-    gap: 0.8rem;
   }
 
   .stat-list__label {
@@ -65,5 +67,55 @@ const className = `stat-list stat-list--${layout}`;
 
   .stat-list--fields .stat-list__value {
     white-space: nowrap;
+  }
+
+  /* ---------- Inline: "🎮 Clave ······ valor" ---------- */
+
+  .stat-list--inline {
+    gap: 0.55rem;
+  }
+
+  .stat-list--inline .stat-list__item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+
+  /* Línea de puntos entre clave y valor, estilo menú de juego */
+  .stat-list--inline .stat-list__item::after {
+    content: '';
+    order: 1;
+    flex: 1 1 0.75rem;
+    min-width: 0.75rem;
+    border-bottom: 2px dotted rgb(255 255 255 / 0.15);
+    transform: translateY(-0.25em);
+  }
+
+  .stat-list--inline .stat-list__label {
+    flex: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    text-transform: none;
+    color: var(--muted);
+  }
+
+  .stat-list--inline .stat-list__icon {
+    width: 1.3em;
+    text-align: center;
+  }
+
+  .stat-list--inline .stat-list__value {
+    order: 2;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: right;
   }
 </style>

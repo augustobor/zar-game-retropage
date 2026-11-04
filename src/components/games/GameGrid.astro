@@ -4,25 +4,28 @@ import CollectionToolbar from '../collection/CollectionToolbar.astro';
 import Pager from '../collection/Pager.astro';
 import GameCard from './GameCard.astro';
 import type { GameProgress } from '../../lib/types';
-import { percent, sourceOptions } from '../../lib/format';
+import { percent, platformOptions } from '../../lib/format';
 import { url } from '../../lib/url';
+import { profile } from '../../data/profile';
 
 interface Props {
   games: GameProgress[];
+  /** Icono de cada plataforma, para los botones de filtro */
+  platformIcons: Map<string, string>;
 }
 const PAGE_SIZE = 8;
 
 const games = [...Astro.props.games].sort(
   (a, b) => percent(b.unlocked, b.total) - percent(a.unlocked, a.total) || b.unlocked - a.unlocked,
 );
-const options = sourceOptions(games);
+const options = platformOptions(games, Astro.props.platformIcons, profile.hiddenPlatforms);
 const cards = games.map((game, i) => ({ game, hidden: i >= PAGE_SIZE }));
 const logrosHref = url('/logros/');
 ---
 
 <section class="game-grid section container" id="juegos" aria-labelledby="juegos-title" data-collection data-page-size={PAGE_SIZE}>
   <div class="game-grid__head">
-    <SectionTitle id="juegos-title" index="02">Juegos</SectionTitle>
+    <SectionTitle id="juegos-title">Juegos</SectionTitle>
     <a class="game-grid__cta" href={logrosHref}>Ver logros ▶</a>
   </div>
 

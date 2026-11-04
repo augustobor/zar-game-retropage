@@ -3,6 +3,7 @@ import type { Achievement, AchievementDetail, GameDetail, GameProgress, LastGame
 import { get, asArray, errorMessage, decodeEntities } from './http';
 import { demoSteam } from './demo';
 import { profile as siteProfile } from '../data/profile';
+import { url } from './url';
 
 const API = 'https://api.steampowered.com';
 const COMMUNITY = 'https://steamcommunity.com';
@@ -16,6 +17,8 @@ const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: '@_
 
 const headerImage = (appid: string | number) => `${ASSETS}/${appid}/header.jpg`;
 const coverImage = (appid: string | number) => `${ASSETS}/${appid}/library_600x900.jpg`;
+/** Cápsula chica (120×45) para mostrar el juego al lado de un logro */
+const smallCapsule = (appid: string | number) => `${ASSETS}/${appid}/capsule_sm_120.jpg`;
 
 /** id apto para URL: steam-<appid>-<apiname> */
 export const steamAchievementId = (appid: string, apiname: string) =>
@@ -117,7 +120,7 @@ async function fromWebApi(id: string, key: string): Promise<SourceData> {
           }
         : undefined,
   };
-  return build(prof, results);
+  return build(prof, results, ownedGames.length);
 }
 
 /**
@@ -242,30 +245,20 @@ function mergeExtraGames(refs: GameRef[]): GameRef[] {
 /** Arma el juego, su lista completa de logros y los desbloqueados para el listado general. */
 function buildGame(ref: GameRef, title: string, raw: RawAchievement[]) {
   const gameId = `steam-${ref.appid}`;
+  const gameInfo = { game: title, gameIcon: smallCapsule(ref.appid), platform: 'PC · Steam' };
   const list: AchievementDetail[] = raw.map((a) => ({
     id: steamAchievementId(ref.appid, a.apiname),
     key: a.apiname.toLowerCase(),
     source: 'steam',
     gameId,
+    ...gameInfo,
     title: a.title,
     description: a.description,
     icon: a.icon,
     unlockedAt: a.unlockTime ? new Date(a.unlockTime * 1000).toISOString() : undefined,
   }));
 
-  const unlocked: Achievement[] = list
-    .filter((a) => a.unlockedAt)
-    .map((a) => ({
-      id: a.id,
-      source: 'steam',
-      gameId,
-      title: a.title,
-      description: a.description,
-      game: title,
-      platform: 'PC · Steam',
-      icon: a.icon,
-      unlockedAt: a.unlockedAt!,
-    }));
+  const unlocked = list.filter((a): a is Achievement => Boolean(a.unlockedAt));
 
   const game: GameProgress = {
     id: gameId,
@@ -284,12 +277,17 @@ function buildGame(ref: GameRef, title: string, raw: RawAchievement[]) {
   return { game, unlocked };
 }
 
-function build(profile: SourceProfile, results: { game: GameProgress; unlocked: Achievement[] }[]): SourceData {
+/**
+ * @param ownedGames Tamaño real de la biblioteca (solo con API key; sin key Steam
+ *   expone apenas los jugados recientemente y el número sería engañoso).
+ */
+function build(profile: SourceProfile, results: { game: GameProgress; unlocked: Achievement[] }[], ownedGames?: number): SourceData {
   return {
     source: 'steam',
     profile,
     games: results.map((r) => r.game),
     achievements: results.flatMap((r) => r.unlocked),
+    platforms: [{ id: 'steam-pc', name: 'PC · Steam', icon: url('/icons/pc.svg'), games: ownedGames }],
     demo: false,
   };
 }

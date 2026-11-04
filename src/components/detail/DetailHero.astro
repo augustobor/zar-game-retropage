@@ -12,8 +12,8 @@ const { backHref, backLabel, kicker, title, lead, externalHref, externalLabel } 
 const backText = `◀ ${backLabel}`;
 ---
 
-<header class="detail-hero">
-  <div class="detail-hero__inner container">
+<header class="detail-hero synthwave-grid">
+  <div class="container">
     <a class="detail-hero__back" href={backHref}>{backText}</a>
 
     <div class="detail-hero__layout">
@@ -34,28 +34,9 @@ const backText = `◀ ${backLabel}`;
 
 <style>
   .detail-hero {
-    position: relative;
-    overflow: hidden;
     padding: 6rem 0 3.5rem;
     background: linear-gradient(180deg, var(--bg) 0%, #2a0f45 40%, #5a1a62 75%, #8e2466 100%);
     border-bottom: 3px solid var(--orange);
-  }
-
-  /* Grilla synthwave que se desvanece hacia arriba */
-  .detail-hero::after {
-    content: '';
-    position: absolute;
-    inset: auto 0 0;
-    height: 40%;
-    background:
-      repeating-linear-gradient(90deg, rgb(255 46 136 / 0.3) 0 1px, transparent 1px 60px),
-      repeating-linear-gradient(0deg, rgb(25 227 201 / 0.25) 0 1px, transparent 1px 20px);
-    mask: linear-gradient(transparent, #000);
-  }
-
-  .detail-hero__inner {
-    position: relative;
-    z-index: 1;
   }
 
   .detail-hero__back {

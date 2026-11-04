@@ -16,6 +16,7 @@ const filters = options.map((option, i) => ({ ...option, pressed: i === 0 ? 'tru
     {
       filters.map((filter) => (
         <button type="button" class="collection-toolbar__filter" data-filter={filter.id} aria-pressed={filter.pressed}>
+          {filter.icon && <img class="collection-toolbar__icon" src={filter.icon} alt="" width="20" height="20" />}
           {filter.label} <span class="collection-toolbar__count">{filter.count}</span>
         </button>
       ))
@@ -48,7 +49,10 @@ const filters = options.map((option, i) => ({ ...option, pressed: i === 0 ? 'tru
   }
 
   .collection-toolbar__filter {
-    padding: 0.7rem 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.9rem;
     font: inherit;
     font-family: var(--font-pixel);
     font-size: 0.65rem;
@@ -74,8 +78,15 @@ const filters = options.map((option, i) => ({ ...option, pressed: i === 0 ? 'tru
     box-shadow: 3px 3px 0 var(--sun);
   }
 
+  .collection-toolbar__icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+
   .collection-toolbar__count {
-    margin-left: 0.4rem;
     color: var(--sun);
   }
 

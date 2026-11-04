@@ -39,7 +39,7 @@ const links = [
 
   .site-nav__cursor {
     color: var(--pink);
-    animation: site-nav-blink 1s steps(1) infinite;
+    animation: blink 1s steps(1) infinite;
   }
 
   .site-nav__links {
@@ -60,11 +60,5 @@ const links = [
   .site-nav__link:hover,
   .site-nav__link[aria-current='page'] {
     color: var(--teal);
-  }
-
-  @keyframes site-nav-blink {
-    50% {
-      opacity: 0;
-    }
   }
 </style>

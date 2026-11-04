@@ -1,7 +1,14 @@
-import type { Source } from './types';
 
 const dateFmt = new Intl.DateTimeFormat('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
-const dateTimeFmt = new Intl.DateTimeFormat('es-AR', { dateStyle: 'long', timeStyle: 'short' });
+// Compacto para que entre en una línea: "19/07/2025, 18:56"
+const dateTimeFmt = new Intl.DateTimeFormat('es-AR', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+});
 
 const validDate = (iso?: string) => {
   if (!iso) return undefined;
@@ -57,24 +64,35 @@ export function rarityLabel(pct?: number) {
 }
 
 /** Descarta los datos sin valor y los pasa a texto, listos para <StatList> */
-export function definedStats(stats: { label: string; value?: string | number | null | false }[]) {
+export function definedStats(stats: { label: string; value?: string | number | null | false; icon?: string }[]) {
   return stats
     .filter((s) => s.value != null && s.value !== '' && s.value !== false)
-    .map((s) => ({ label: s.label, value: String(s.value) }));
+    .map((s) => ({ label: s.label, value: String(s.value), icon: s.icon }));
 }
 
 export interface FilterOption {
   id: string;
   label: string;
   count: number;
+  icon?: string;
 }
 
-/** Opciones Todos / Steam / RetroAchievements con sus conteos */
-export function sourceOptions(items: { source: Source }[]): FilterOption[] {
-  const count = (source: Source) => items.filter((i) => i.source === source).length;
-  return [
-    { id: 'all', label: 'Todos', count: items.length },
-    { id: 'steam', label: SOURCE_LABELS.steam, count: count('steam') },
-    { id: 'retro', label: SOURCE_LABELS.retro, count: count('retro') },
-  ];
+/**
+ * Opciones "Todos" + una por plataforma (consola), de la que más ítems tiene a la que menos.
+ * El id es el nombre de la plataforma: coincide con el data-group de cada tarjeta.
+ * Las de `hidden` no tienen botón propio (sus ítems siguen apareciendo en "Todos").
+ */
+export function platformOptions(
+  items: { platform: string }[],
+  icons: Map<string, string>,
+  hidden: string[] = [],
+): FilterOption[] {
+  const hiddenSet = new Set(hidden.map((name) => name.toLowerCase()));
+  const counts = new Map<string, number>();
+  for (const { platform } of items) counts.set(platform, (counts.get(platform) ?? 0) + 1);
+  const platforms = [...counts]
+    .filter(([name]) => !hiddenSet.has(name.toLowerCase()))
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, count]) => ({ id: name, label: name, count, icon: icons.get(name) }));
+  return [{ id: 'all', label: 'Todos', count: items.length }, ...platforms];
 }

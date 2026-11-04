@@ -1,21 +1,5 @@
 export type Source = 'steam' | 'retro';
 
-export interface Achievement {
-  id: string;
-  source: Source;
-  /** id del GameProgress/GameDetail al que pertenece */
-  gameId: string;
-  title: string;
-  description: string;
-  game: string;
-  platform: string;
-  icon?: string;
-  /** Fecha ISO de desbloqueo */
-  unlockedAt: string;
-  points?: number;
-  hardcore?: boolean;
-}
-
 export interface GameProgress {
   id: string;
   source: Source;
@@ -37,9 +21,14 @@ export interface GameProgress {
 export interface AchievementDetail {
   id: string;
   source: Source;
+  /** id del GameProgress/GameDetail al que pertenece */
   gameId: string;
   title: string;
   description: string;
+  /** Juego al que pertenece: nombre, icono y plataforma */
+  game: string;
+  gameIcon?: string;
+  platform: string;
   icon?: string;
   iconLocked?: string;
   points?: number;
@@ -49,6 +38,7 @@ export interface AchievementDetail {
   rarity?: number;
   /** Cantidad de jugadores que lo tienen */
   awarded?: number;
+  /** Fecha ISO de desbloqueo (sin fecha = bloqueado) */
   unlockedAt?: string;
   hardcore?: boolean;
   /** RA: progression | win_condition | missable */
@@ -56,6 +46,9 @@ export interface AchievementDetail {
   /** Steam: apiname en minúsculas, para cruzar con la rareza global */
   key?: string;
 }
+
+/** Logro desbloqueado (los del listado): mismo formato, con la fecha garantizada. */
+export type Achievement = AchievementDetail & { unlockedAt: string };
 
 export interface GameDetail {
   id: string;
@@ -118,11 +111,21 @@ export interface SourceProfile {
   lastGame?: LastGame;
 }
 
+/** Consola o plataforma donde hay juegos con progreso */
+export interface Platform {
+  id: string;
+  name: string;
+  icon?: string;
+  /** Cantidad de juegos con progreso (si la fuente la conoce completa) */
+  games?: number;
+}
+
 export interface SourceData {
   source: Source;
   profile: SourceProfile | null;
   achievements: Achievement[];
   games: GameProgress[];
+  platforms?: Platform[];
   /** true si se están mostrando datos de demo (faltan keys o falló la API) */
   demo: boolean;
   error?: string;

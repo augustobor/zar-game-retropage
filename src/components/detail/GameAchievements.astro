@@ -8,12 +8,10 @@ import { url } from '../../lib/url';
 
 interface Props {
   game: GameDetail;
-  /** ids de logros que tienen página de detalle */
-  linkedIds: Set<string>;
 }
 const PAGE_SIZE = 12;
 
-const { game, linkedIds } = Astro.props;
+const { game } = Astro.props;
 const achievements = game.achievements;
 const unlockedCount = achievements.filter((a) => a.unlockedAt).length;
 const hasAchievements = achievements.length > 0;
@@ -27,7 +25,9 @@ const options = [
 const cards = achievements.map((achievement, i) => ({
   achievement,
   group: achievement.unlockedAt ? 'unlocked' : 'locked',
-  href: linkedIds.has(achievement.id) ? url(`/logros/${achievement.id}/`) : undefined,
+  // Todos los logros tienen página de detalle, desbloqueados o no
+  href: url(`/logros/${achievement.id}/`),
+  showGame: false,
   hidden: i >= PAGE_SIZE,
 }));
 ---

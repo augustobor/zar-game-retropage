@@ -3,19 +3,22 @@ import CollectionToolbar from '../collection/CollectionToolbar.astro';
 import Pager from '../collection/Pager.astro';
 import AchievementCard from './AchievementCard.astro';
 import type { Achievement } from '../../lib/types';
-import { sourceOptions } from '../../lib/format';
+import { platformOptions } from '../../lib/format';
 import { url } from '../../lib/url';
+import { profile } from '../../data/profile';
 
 interface Props {
   achievements: Achievement[];
+  /** Icono de cada plataforma, para los botones de filtro */
+  platformIcons: Map<string, string>;
 }
 const PAGE_SIZE = 12;
 
-const { achievements } = Astro.props;
-const options = sourceOptions(achievements);
+const { achievements, platformIcons } = Astro.props;
+const options = platformOptions(achievements, platformIcons, profile.hiddenPlatforms);
 const cards = achievements.map((achievement, i) => ({
   achievement,
-  group: achievement.source,
+  group: achievement.platform,
   href: url(`/logros/${achievement.id}/`),
   showGame: true,
   hidden: i >= PAGE_SIZE,
