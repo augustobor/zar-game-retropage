@@ -64,6 +64,21 @@ export async function getRetroData(): Promise<SourceData> {
   }
 }
 
+/** Solo el perfil (Rich Presence y último juego): 2 pedidos, para el status en vivo. */
+export async function getRetroLiveProfile(): Promise<SourceData> {
+  if (!import.meta.env.RA_USERNAME || !import.meta.env.RA_API_KEY) return demoRetro('Faltan RA_USERNAME y/o RA_API_KEY');
+
+  try {
+    const [profile, recentlyPlayed] = await Promise.all([
+      ra('API_GetUserProfile'),
+      raOptional('API_GetUserRecentlyPlayedGames', { c: '1' }, 'último juego'),
+    ]);
+    return { source: 'retro', profile: toProfile(profile, recentlyPlayed[0]), games: [], achievements: [], demo: false };
+  } catch (err) {
+    return demoRetro(`RetroAchievements: ${errorMessage(err)}`);
+  }
+}
+
 function toProfile(raw: any, lastPlayed?: any): SourceProfile {
   return {
     username: raw.User,

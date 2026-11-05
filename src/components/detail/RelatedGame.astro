@@ -1,35 +1,151 @@
 ---
-import GameCard from '../games/GameCard.astro';
-import type { GameDetail, GameProgress } from '../../lib/types';
+import ProgressBar from '../ui/ProgressBar.astro';
+import type { GameDetail } from '../../lib/types';
+import { AWARD_LABELS, percent } from '../../lib/format';
+import { url } from '../../lib/url';
 
 interface Props {
   game: GameDetail;
 }
 const { game } = Astro.props;
 
-// GameCard espera el formato del listado: se adapta la ficha
-const card: GameProgress = {
-  id: game.id,
-  source: game.source,
-  title: game.title,
-  platform: game.platform,
-  image: game.icon,
-  art: game.source === 'retro' ? 'icon' : 'banner',
-  unlocked: game.unlocked,
-  total: game.total,
-  hours: game.hours,
-  award: game.award,
-};
+const href = url(`/juegos/${game.id}/`);
+const image = game.cover ?? game.icon;
+const imageAlt = `Portada de ${game.title}`;
+const pct = percent(game.unlocked, game.total);
+const hasAchievements = game.total > 0;
+const meta = [game.platform, game.hours ? `${game.hours.toLocaleString('es-AR')} h` : null].filter(Boolean).join(' · ');
+const countLabel = hasAchievements ? `${game.unlocked}/${game.total} logros · ${pct}%` : 'Sin logros';
+const awardLabel = game.award ? (AWARD_LABELS[game.award] ?? game.award) : undefined;
+const progressLabel = `Progreso de logros de ${game.title}`;
 ---
 
-<ul class="related-game">
-  <GameCard game={card} />
-</ul>
+<a class="related-game" href={href}>
+  <div class="related-game__art">
+    {image && <img class="related-game__image" src={image} alt={imageAlt} loading="lazy" data-fallback={game.coverFallback} />}
+  </div>
+
+  <div class="related-game__info">
+    <p class="related-game__meta">{meta}</p>
+    <h3 class="related-game__title">{game.title}</h3>
+    {hasAchievements && <ProgressBar value={pct} label={progressLabel} />}
+    <p class="related-game__count">
+      {countLabel}
+      {awardLabel && <span class="related-game__award">{awardLabel}</span>}
+    </p>
+    <span class="related-game__cta">Ver juego ▶</span>
+  </div>
+</a>
+
+<script>
+  import '../../scripts/image-fallback';
+</script>
 
 <style>
   .related-game {
-    max-width: 320px;
-    padding: 0;
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+    border-radius: 14px;
+    background: var(--bg);
+    border: 1px solid var(--surface-2);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.15s,
+      translate 0.15s;
+  }
+
+  .related-game:hover {
+    translate: 0 -2px;
+    border-color: var(--pink);
+  }
+
+  /* ---------- Portada centrada en su caja ---------- */
+
+  /* Caja cuadrada de tamaño fijo: cualquier portada (cuadrada de RA, vertical de Steam) queda centrada */
+  .related-game__art {
+    width: 180px;
+    height: 180px;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: linear-gradient(160deg, var(--plum), #6b1d6b 60%, #d6336c);
+  }
+
+  .related-game__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(4px 6px 0 rgb(0 0 0 / 0.4));
+  }
+
+  /* ---------- Info ---------- */
+
+  .related-game__info {
+    display: grid;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .related-game__meta {
     margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .related-game__title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    line-height: 1.1;
+  }
+
+  .related-game__count {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  .related-game__award {
+    padding: 0.15rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--bg);
+    background: var(--sun);
+    border-radius: 4px;
+  }
+
+  .related-game__cta {
+    margin-top: 0.25rem;
+    font-family: var(--font-pixel);
+    font-size: 0.6rem;
+    color: var(--teal);
+  }
+
+  .related-game:hover .related-game__cta {
+    color: var(--sun);
+  }
+
+  /* Celular: portada centrada arriba, info debajo */
+  @media (max-width: 640px) {
+    .related-game {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+
+    .related-game__art {
+      justify-self: center;
+    }
+
+    .related-game__count {
+      justify-content: center;
+    }
   }
 </style>

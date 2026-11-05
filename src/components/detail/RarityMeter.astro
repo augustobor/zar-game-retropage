@@ -1,6 +1,6 @@
 ---
 import ProgressBar from '../ui/ProgressBar.astro';
-import { formatNumber, formatPercent, rarityLabel } from '../../lib/format';
+import { formatNumber, formatPercent, rarityTier } from '../../lib/format';
 
 interface Props {
   /** % de jugadores que tienen el logro */
@@ -10,14 +10,15 @@ interface Props {
 }
 const { rarity, awarded } = Astro.props;
 
-const tier = rarityLabel(rarity);
+const tier = rarityTier(rarity)!;
+const className = `rarity-meter rarity-meter--${tier.id}`;
 const percentLabel = formatPercent(rarity);
 const detail = awarded != null ? `${formatNumber(awarded)} jugadores lo tienen` : 'de los jugadores lo tiene';
 const value = Math.max(1, Math.round(rarity));
 ---
 
-<div class="rarity-meter">
-  <p class="rarity-meter__tier">{tier}</p>
+<div class={className}>
+  <p class="rarity-meter__tier">{tier.label}</p>
   <p class="rarity-meter__value">
     <span class="rarity-meter__percent">{percentLabel}</span>
     <span class="rarity-meter__detail">{detail}</span>
@@ -26,16 +27,27 @@ const value = Math.max(1, Math.round(rarity));
 </div>
 
 <style>
+  /* Cada nivel define su color; el texto y la barra lo toman de --tier */
+  .rarity-meter--common { --tier: var(--rarity-common); }
+  .rarity-meter--uncommon { --tier: var(--rarity-uncommon); }
+  .rarity-meter--rare { --tier: var(--rarity-rare); }
+  .rarity-meter--epic { --tier: var(--rarity-epic); }
+  .rarity-meter--legendary { --tier: var(--rarity-legendary); }
+
   .rarity-meter {
     display: grid;
     gap: 0.6rem;
+    /* ProgressBar usa estas variables para su degradé */
+    --progress-from: color-mix(in srgb, var(--tier) 55%, var(--bg));
+    --progress-to: var(--tier);
   }
 
   .rarity-meter__tier {
     margin: 0;
     font-family: var(--font-display);
     font-size: 1.8rem;
-    color: var(--sun);
+    color: var(--tier);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--tier) 45%, transparent);
   }
 
   .rarity-meter__value {
@@ -49,7 +61,7 @@ const value = Math.max(1, Math.round(rarity));
   .rarity-meter__percent {
     font-family: var(--font-pixel);
     font-size: 0.9rem;
-    color: var(--teal);
+    color: var(--tier);
   }
 
   .rarity-meter__detail {

@@ -1,0 +1,19 @@
+---
+// Fragmento HTML de las tarjetas de cuenta con datos EN VIVO.
+// Lo pide src/scripts/live-status.ts cada 60 s desde el Brief de la portada.
+import AccountList from '../../components/profile/AccountList.astro';
+import { getLiveSources } from '../../lib/data';
+
+// Se genera en cada pedido (función de Vercel), no en el build: así la key queda en el servidor
+export const prerender = false;
+// Solo el fragmento, sin <html> ni layout
+export const partial = true;
+
+const sources = await getLiveSources();
+
+// El CDN de Vercel guarda la respuesta 60 s: RA y Steam reciben como mucho una ronda
+// de pedidos por minuto, sin importar cuántas visitas haya.
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300');
+---
+
+<AccountList sources={sources} live />

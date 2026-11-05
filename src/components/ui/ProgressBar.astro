@@ -14,10 +14,11 @@ const style = `--value:${value}%`;
 <div class={className} style={style} role="progressbar" aria-label={label} aria-valuenow={value} aria-valuemin="0" aria-valuemax="100"></div>
 
 <style>
+  /* El degradé se puede cambiar desde afuera con --progress-from / --progress-to */
   .progress-bar {
     height: 8px;
     border-radius: 99px;
-    background: var(--surface-2) linear-gradient(90deg, var(--teal), var(--sun)) no-repeat;
+    background: var(--surface-2) linear-gradient(90deg, var(--progress-from, var(--teal)), var(--progress-to, var(--sun))) no-repeat;
     background-size: var(--value) 100%;
   }
 

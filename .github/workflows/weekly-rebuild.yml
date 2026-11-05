@@ -1,0 +1,25 @@
+# Rebuild semanal: vuelve a construir el sitio en Vercel para traer logros y fichas nuevos.
+# El status (último juego, Rich Presence) no depende de esto: se actualiza en vivo cada 60 s.
+#
+# Requiere el secret VERCEL_DEPLOY_HOOK_URL (Vercel → Project → Settings → Git → Deploy Hooks).
+# También se puede correr a mano: GitHub → Actions → "Rebuild semanal" → Run workflow.
+name: Rebuild semanal
+
+on:
+  schedule:
+    - cron: '0 9 * * 1' # lunes 09:00 UTC = 06:00 en Argentina
+  workflow_dispatch:
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar el deploy en Vercel
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "::error::Falta el secret VERCEL_DEPLOY_HOOK_URL"
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST "$DEPLOY_HOOK"

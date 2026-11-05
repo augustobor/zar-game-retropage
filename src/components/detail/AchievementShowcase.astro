@@ -1,5 +1,6 @@
 ---
 import FloatCard from './FloatCard.astro';
+import RarityMeter from './RarityMeter.astro';
 import type { AchievementDetail } from '../../lib/types';
 import { formatDate } from '../../lib/format';
 
@@ -18,6 +19,7 @@ const badgeModifier = locked ? 'locked' : achievement.hardcore ? 'hardcore' : un
 const badgeClass = badgeModifier
   ? `achievement-showcase__badge achievement-showcase__badge--${badgeModifier}`
   : 'achievement-showcase__badge';
+const hasRarity = achievement.rarity != null;
 ---
 
 <FloatCard>
@@ -32,8 +34,15 @@ const badgeClass = badgeModifier
       <span class="achievement-showcase__game">{achievement.game}</span>
       <span class="achievement-showcase__title">{achievement.title}</span>
       <span class="achievement-showcase__date">{unlockedLabel}</span>
+      <span class="achievement-showcase__hint" aria-hidden="true">↻ Tocá para ver la rareza</span>
     </figcaption>
   </figure>
+
+  <div slot="back" class="achievement-showcase__back">
+    <p class="achievement-showcase__back-label">Rareza</p>
+    {hasRarity ? <RarityMeter rarity={achievement.rarity!} awarded={achievement.awarded} /> : <p class="achievement-showcase__no-data">Sin datos de rareza para este logro.</p>}
+    <span class="achievement-showcase__hint" aria-hidden="true">↻ Tocá para volver</span>
+  </div>
 </FloatCard>
 
 <style>
@@ -126,6 +135,36 @@ const badgeClass = badgeModifier
 
   .achievement-showcase__date {
     font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .achievement-showcase__hint {
+    margin-top: 0.35rem;
+    font-family: var(--font-pixel);
+    font-size: 0.45rem;
+    color: var(--pink);
+  }
+
+  /* ---------- Dorso: rareza ---------- */
+
+  .achievement-showcase__back {
+    display: grid;
+    align-content: center;
+    gap: 1rem;
+    height: 100%;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .achievement-showcase__back-label {
+    margin: 0;
+    font-family: var(--font-pixel);
+    font-size: 0.6rem;
+    color: var(--pink);
+    text-transform: uppercase;
+  }
+
+  .achievement-showcase__no-data {
+    margin: 0;
     color: var(--muted);
   }
 </style>

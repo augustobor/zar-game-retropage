@@ -1,14 +1,38 @@
 ---
 // Tarjeta que flota (sube/baja con leve giro) con brillo holográfico y sombra en el piso.
+// Si recibe el slot "back", se da vuelta al hacer click (o Enter/Espacio) con un giro
+// rápido y un destello en degradé; el comportamiento está en src/scripts/flip-card.ts.
+const flippable = Astro.slots.has('back');
 ---
 
 <div class="float-card">
   <div class="float-card__glow" aria-hidden="true"></div>
-  <div class="float-card__card">
-    <slot />
+
+  <div class="float-card__float">
+    {
+      flippable ? (
+        <div class="float-card__flipper" data-flip role="button" tabindex="0" aria-pressed="false" aria-label="Dar vuelta la tarjeta">
+          <div class="float-card__face float-card__face--front">
+            <slot />
+          </div>
+          <div class="float-card__face float-card__face--back">
+            <slot name="back" />
+          </div>
+        </div>
+      ) : (
+        <div class="float-card__face">
+          <slot />
+        </div>
+      )
+    }
   </div>
+
   <div class="float-card__shadow" aria-hidden="true"></div>
 </div>
+
+<script>
+  import '../../scripts/flip-card';
+</script>
 
 <style>
   .float-card {
@@ -26,9 +50,18 @@
     animation: float-card-pulse 5s ease-in-out infinite;
   }
 
-  .float-card__card {
+  /* Contenedor que flota; la perspectiva hace que el giro se vea en 3D */
+  .float-card__float {
     position: relative;
     width: min(300px, 80vw);
+    perspective: 1200px;
+    animation: float-card-float 5s ease-in-out infinite;
+  }
+
+  /* ---------- Caras ---------- */
+
+  .float-card__face {
+    position: relative;
     overflow: hidden;
     border-radius: 18px;
     background: var(--surface);
@@ -36,11 +69,10 @@
     box-shadow:
       8px 8px 0 var(--violet),
       0 20px 60px rgb(0 0 0 / 0.5);
-    animation: float-card-float 5s ease-in-out infinite;
   }
 
   /* Reflejo holográfico que cruza la tarjeta */
-  .float-card__card::after {
+  .float-card__face::after {
     content: '';
     position: absolute;
     inset: 0;
@@ -49,6 +81,59 @@
     pointer-events: none;
     animation: float-card-shine 6s ease-in-out infinite;
   }
+
+  /* ---------- Giro ---------- */
+
+  .float-card__flipper {
+    position: relative;
+    display: grid;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.3, 1.4, 0.5, 1);
+  }
+
+  .float-card__flipper[aria-pressed='true'] {
+    transform: rotateY(180deg);
+  }
+
+  .float-card__flipper:focus-visible {
+    outline: none;
+  }
+
+  .float-card__flipper:focus-visible .float-card__face {
+    outline: 2px solid var(--sun);
+    outline-offset: 4px;
+  }
+
+  /* Las dos caras ocupan la misma celda: el frente marca el tamaño */
+  .float-card__flipper .float-card__face {
+    grid-area: 1 / 1;
+    backface-visibility: hidden;
+  }
+
+  .float-card__face--back {
+    transform: rotateY(180deg);
+    border-color: var(--teal);
+    background: linear-gradient(160deg, var(--surface), var(--plum));
+  }
+
+  /* Destello en degradé que barre la tarjeta mientras gira (clase puesta por flip-card.ts) */
+  .float-card__face::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: linear-gradient(115deg, var(--pink), var(--orange) 30%, var(--sun) 50%, var(--teal) 75%, var(--violet));
+    mix-blend-mode: screen;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .float-card__flipper.is-spinning .float-card__face::before {
+    animation: float-card-flash 0.6s ease-out;
+  }
+
+  /* ---------- Sombra en el piso ---------- */
 
   .float-card__shadow {
     width: 55%;
@@ -62,7 +147,7 @@
 
   /* En celular la tarjeta no debe tapar el título: más chica */
   @media (max-width: 640px) {
-    .float-card__card {
+    .float-card__float {
       width: min(230px, 62vw);
     }
 
@@ -103,6 +188,20 @@
     }
   }
 
+  @keyframes float-card-flash {
+    0% {
+      opacity: 0;
+      transform: translateX(-30%);
+    }
+    45% {
+      opacity: 0.85;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(30%);
+    }
+  }
+
   @keyframes float-card-pulse {
     50% {
       opacity: 0.6;
@@ -111,9 +210,17 @@
 
   @media (prefers-reduced-motion: reduce) {
     .float-card__glow,
-    .float-card__card,
-    .float-card__card::after,
+    .float-card__float,
+    .float-card__face::after,
     .float-card__shadow {
+      animation: none;
+    }
+
+    .float-card__flipper {
+      transition-duration: 0.01s;
+    }
+
+    .float-card__flipper.is-spinning .float-card__face::before {
       animation: none;
     }
   }

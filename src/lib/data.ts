@@ -1,7 +1,7 @@
 import type { Achievement, AchievementDetail, GameDetail, GameProgress, Platform, SourceData } from './types';
 import { profile } from '../data/profile';
-import { getRetroData } from './retroachievements';
-import { getSteamData } from './steam';
+import { getRetroData, getRetroLiveProfile } from './retroachievements';
+import { getSteamData, getSteamLiveProfile } from './steam';
 import { buildGameDetail } from './details';
 import { MAX_ACHIEVEMENTS } from './config';
 
@@ -44,6 +44,14 @@ export const getProfileData = cached<ProfileData>(
   () => Promise.all([getRetroData(), getSteamData()]).then(([retro, steam]) => ({ retro, steam })),
   ({ retro, steam }) => retro.demo || steam.demo,
 );
+
+/**
+ * Perfiles "en vivo" (estado, Rich Presence y último juego) para /partials/cuentas/.
+ * Sin caché propia a propósito: la respuesta la cachea 60 s el CDN de Vercel.
+ */
+export async function getLiveSources(): Promise<SourceData[]> {
+  return Promise.all([getSteamLiveProfile(), getRetroLiveProfile()]);
+}
 
 /**
  * Plataformas para el Brief: PC (Steam), las consolas con progreso en RA

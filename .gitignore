@@ -1,9 +1,10 @@
 node_modules/
 dist/
+.vercel/
 package-lock.json
 .astro/
 .env
-.log
+*.log
 .env.*
 !.env.example
 .DS_Store

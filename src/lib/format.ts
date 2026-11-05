@@ -53,14 +53,19 @@ export const ACHIEVEMENT_TYPES: Record<string, string> = {
   missable: 'Perdible',
 };
 
-/** Etiqueta de rareza según el % de jugadores que tienen el logro */
-export function rarityLabel(pct?: number) {
+export type RarityTierId = 'legendary' | 'epic' | 'rare' | 'uncommon' | 'common';
+
+/**
+ * Nivel de rareza según el % de jugadores que tienen el logro.
+ * El `id` elige el color (variables --rarity-* en global.css).
+ */
+export function rarityTier(pct?: number): { id: RarityTierId; label: string } | undefined {
   if (pct == null) return undefined;
-  if (pct < 1) return 'Legendario';
-  if (pct < 5) return 'Épico';
-  if (pct < 20) return 'Raro';
-  if (pct < 50) return 'Poco común';
-  return 'Común';
+  if (pct < 1) return { id: 'legendary', label: 'Legendario' };
+  if (pct < 5) return { id: 'epic', label: 'Épico' };
+  if (pct < 20) return { id: 'rare', label: 'Raro' };
+  if (pct < 50) return { id: 'uncommon', label: 'Poco común' };
+  return { id: 'common', label: 'Común' };
 }
 
 /** Descarta los datos sin valor y los pasa a texto, listos para <StatList> */

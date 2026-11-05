@@ -3,14 +3,17 @@ import SectionTitle from '../ui/SectionTitle.astro';
 import ChipList from '../ui/ChipList.astro';
 import PlatformList from '../ui/PlatformList.astro';
 import Timeline from '../ui/Timeline.astro';
-import type { Platform } from '../../lib/types';
+import AccountList from '../profile/AccountList.astro';
+import type { Platform, SourceData } from '../../lib/types';
 import { profile } from '../../data/profile';
 
 interface Props {
+  /** Cuentas de Steam y RA: estado y último juego (se actualizan en vivo cada 60 s) */
+  sources: SourceData[];
   /** Steam + consolas de RetroAchievements + extras de profile.ts */
   platforms: Platform[];
 }
-const { platforms } = Astro.props;
+const { sources, platforms } = Astro.props;
 // La biografía (profile.bio + location) está oculta por ahora. Para volver a mostrarla,
 // importar Prose ('../ui/Prose.astro') y agregar al inicio del panel:
 //   <h3 class="panel__label">Biografía</h3>
@@ -20,6 +23,8 @@ const { favorites, timeline } = profile;
 
 <section class="brief section container" id="brief" aria-labelledby="brief-title">
   <SectionTitle id="brief-title">Brief</SectionTitle>
+
+  <AccountList sources={sources} />
 
   <article class="panel">
     <h3 class="panel__label">Plataformas</h3>

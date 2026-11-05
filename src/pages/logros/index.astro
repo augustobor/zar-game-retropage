@@ -1,17 +1,11 @@
 ---
 import Base from '../../layouts/Base.astro';
 import PageHeader from '../../components/site/PageHeader.astro';
-import AccountList from '../../components/profile/AccountList.astro';
 import AchievementList from '../../components/achievements/AchievementList.astro';
-import { getProfileData, getAchievementList, getPlatformIcons } from '../../lib/data';
+import { getAchievementList, getPlatformIcons } from '../../lib/data';
 import { profile } from '../../data/profile';
 
-const [{ retro, steam }, achievements, platformIcons] = await Promise.all([
-  getProfileData(),
-  getAchievementList(),
-  getPlatformIcons(),
-]);
-const sources = [steam, retro];
+const [achievements, platformIcons] = await Promise.all([getAchievementList(), getPlatformIcons()]);
 const title = `Logros · ${profile.handle}`;
 const description = `Sala de trofeos de ${profile.handle}: logros de Steam y RetroAchievements.`;
 ---
@@ -19,7 +13,6 @@ const description = `Sala de trofeos de ${profile.handle}: logros de Steam y Ret
 <Base title={title} description={description}>
   <PageHeader kicker="// Sala de trofeos" title="Logros" subtitle="Steam + RetroAchievements" />
   <main class="container">
-    <AccountList sources={sources} />
     <AchievementList achievements={achievements} platformIcons={platformIcons} />
   </main>
 </Base>

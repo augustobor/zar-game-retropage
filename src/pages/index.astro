@@ -20,7 +20,7 @@ const description = `${profile.handle} — ${profile.tagline}. Logros de Steam y
 <Base title={title} description={description}>
   <Hero retro={retro} steam={steam} />
   <main>
-    <Brief platforms={platforms} />
+    <Brief sources={[steam, retro]} platforms={platforms} />
     <GameGrid games={games} platformIcons={platformIcons} />
   </main>
 </Base>

@@ -244,6 +244,8 @@ portfolio-retro-gamer/
 |---|---|
 | [`collection.ts`](src/scripts/collection.ts) | Filtro + búsqueda + paginación. Se autoinicializa al importarse |
 | [`image-fallback.ts`](src/scripts/image-fallback.ts) | Cambia `src` por `data-fallback` si la imagen no carga |
+| [`live-status.ts`](src/scripts/live-status.ts) | Cada 60 s pide `/partials/cuentas/` y reemplaza las tarjetas de cuenta del Brief (status en vivo) |
+| [`flip-card.ts`](src/scripts/flip-card.ts) | Da vuelta las tarjetas `[data-flip]` con click, Enter o Espacio |
 
 ### 🛣️ `src/pages/` — rutas
 
@@ -253,6 +255,7 @@ portfolio-retro-gamer/
 | [`logros/index.astro`](src/pages/logros/index.astro) | `/logros/` | AccountList + AchievementList |
 | [`juegos/[id].astro`](src/pages/juegos/[id].astro) | `/juegos/:id/` | `getStaticPaths` lista los juegos; cada página pide **su** ficha |
 | [`logros/[id].astro`](src/pages/logros/[id].astro) | `/logros/:id/` | `getStaticPaths` lista **todos** los logros de todos los juegos (desbloqueados o no), así cualquier tarjeta abre su detalle |
+| [`partials/cuentas.astro`](src/pages/partials/cuentas.astro) | `/partials/cuentas/` | **Única ruta no estática** (`prerender = false`): función de Vercel que devuelve las tarjetas de cuenta con datos en vivo |
 
 ### 🧩 `src/components/`
 
@@ -304,7 +307,7 @@ portfolio-retro-gamer/
 
 | Componente | Qué renderiza | Props |
 |---|---|---|
-| `AccountList` | Grilla de cuentas | `sources` |
+| `AccountList` | Grilla de cuentas (en el Brief) con la marca "Datos del build" o "● En vivo" | `sources`, `live?` |
 | `AccountCard` | Usuario, estado, último juego y Rich Presence en campos | `source` |
 
 </details>
@@ -315,12 +318,12 @@ portfolio-retro-gamer/
 | Componente | Qué renderiza | Props |
 |---|---|---|
 | `DetailHero` | Cabecera con link de volver, slot `card` y bloque de info (`h1`, lead, link externo) | `backHref`, `backLabel`, `kicker`, `title`, `lead?`, `externalHref?`, `externalLabel?` |
-| `FloatCard` | Contenedor que **flota** 🎈 (sube y baja con giro), brillo holográfico y sombra. Respeta `prefers-reduced-motion` | slot |
+| `FloatCard` | Contenedor que **flota** 🎈 (sube y baja con giro), brillo holográfico y sombra. Si recibe el slot `back`, **se da vuelta** al hacer click con un destello en degradé. Respeta `prefers-reduced-motion` | slot, slot `back?` |
 | `GameShowcase` | Portada vertical + progreso dentro de `FloatCard` | `game` |
 | `AchievementShowcase` | Medalla con la insignia + puntos dentro de `FloatCard` (marco distinto si es hardcore) | `achievement` |
 | `ScreenshotGallery` | Grilla de capturas | `images`, `gameTitle` |
 | `GameAchievements` | Todos los logros del juego con filtro Desbloqueados/Bloqueados | `game`, `linkedIds` |
-| `RarityMeter` | Tier (Común → Legendario), % y barra | `rarity`, `awarded?` |
+| `RarityMeter` | Nivel de rareza con su color (Común ⚪, Poco común 🟢, Raro 🔵, Épico 🟣, Legendario 🟡), % y barra. Va en el dorso de la tarjeta del logro | `rarity`, `awarded?` |
 | `RelatedGame` | Adapta `GameDetail` → `GameCard` | `game` |
 | `RelatedAchievements` | Otros logros desbloqueados del mismo juego | `achievements`, `linkedIds` |
 
@@ -458,17 +461,47 @@ Con `STEAM_API_KEY` se usan `GetOwnedGames`, `GetPlayerAchievements` y `GetSchem
 
 ---
 
-## 🚀 Deploy
+## 🚀 Deploy (Vercel + GitHub)
 
-Estado: **pendiente** (GitHub Pages / Netlify / Vercel).
+El sitio es estático **salvo una ruta**: `/partials/cuentas/`, que Vercel ejecuta como función para el status en vivo (`@astrojs/vercel` en `astro.config.mjs`).
 
-Puntos a tener en cuenta:
+### Qué se actualiza y cuándo
 
-- 📦 **Salida:** `dist/` es 100 % estático. Sirve en cualquier hosting.
-- 🔑 **Secrets:** cargar `RA_USERNAME`, `RA_API_KEY`, `STEAM_ID` (y opcionales) como variables secretas del hosting o del CI.
-- ⏰ **Datos frescos:** los datos son una foto del momento del build. Hace falta un **rebuild programado** (por ejemplo, un cron diario en GitHub Actions).
-- 🧭 **Subruta:** si se publica en `usuario.github.io/repo/`, configurar `base: '/repo/'` en `astro.config.mjs`. Todos los links pasan por `url()`, así que no se rompen.
-- ⏳ **Tiempo de build:** ~2 min por el ritmo de pedidos a RA. Normal, no está colgado.
+| Dato | Cómo se actualiza | Frecuencia |
+|---|---|---|
+| 🟢 Status: Rich Presence, último juego, "Jugando ahora" | Función `/partials/cuentas/` + `src/scripts/live-status.ts` | **En vivo**: cada 60 s mientras la pestaña está abierta |
+| 🏆 Logros, juegos, fichas, plataformas | Rebuild completo del sitio | **Semanal** (lunes 06:00 ART) o a mano |
+
+### Status en vivo (cómo no expone la key)
+
+```
+Navegador ──cada 60 s──▶ /partials/cuentas/ (función de Vercel, tiene la key)
+                              │  caché del CDN: 60 s
+                              ├──▶ RetroAchievements (perfil + último juego)
+                              └──▶ Steam (perfil XML)
+Navegador ◀── HTML de las tarjetas ya armadas (sin key)
+```
+
+- El navegador **nunca** habla con RA ni con Steam: si lo hiciera, la key viajaría en el pedido y se vería con F12. Además, Steam bloquea esos pedidos (CORS).
+- El CDN de Vercel guarda la respuesta 60 s (`s-maxage=60`): RA recibe **como mucho una ronda de pedidos por minuto**, haya las visitas que haya.
+- Si la función no responde (por ejemplo en `npm run preview`), las tarjetas quedan con los datos del build.
+
+### Rebuild semanal
+
+[`.github/workflows/weekly-rebuild.yml`](.github/workflows/weekly-rebuild.yml) dispara un **Deploy Hook** de Vercel todos los lunes a las 06:00 (hora Argentina). También se puede correr a mano desde GitHub → *Actions* → *Rebuild semanal* → *Run workflow*.
+
+### Pasos para publicar
+
+1. **Importar el repo en Vercel** (*Add New → Project*). Detecta Astro solo; build `npm run build`.
+2. **Variables de entorno** en Vercel → *Settings → Environment Variables*: `RA_USERNAME`, `RA_API_KEY`, `STEAM_ID` (y opcionales `STEAM_API_KEY`, `MAX_ACHIEVEMENTS`, `RECENT_MINUTES`).
+3. **Deploy Hook** en Vercel → *Settings → Git → Deploy Hooks* (rama `main`). Copiar la URL.
+4. **Secret en GitHub** → *Settings → Secrets and variables → Actions*: `VERCEL_DEPLOY_HOOK_URL` con esa URL.
+
+Notas:
+
+- ⏳ **Tiempo de build:** ~3 min por el ritmo de pedidos a RA (1 cada 1,5 s). Normal, no está colgado.
+- 🚦 **No encadenar builds:** varios seguidos superan el límite de RA y lo bloquean ~10 min. Ese build no falla: las fichas afectadas salen básicas.
+- 🔍 **`npm run preview` no está disponible** con el adapter de Vercel. Para probar la función localmente, usar `npm run dev`.
 
 ---
 

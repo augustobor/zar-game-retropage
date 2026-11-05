@@ -128,12 +128,7 @@ async function fromWebApi(id: string, key: string): Promise<SourceData> {
  * recientemente" sin login, así que se suman los de `steamGames` en src/data/profile.ts.
  */
 async function fromPublicProfile(id: string): Promise<SourceData> {
-  const base = /^\d{17}$/.test(id) ? `${COMMUNITY}/profiles/${id}` : `${COMMUNITY}/id/${id}`;
-  const xml = (url: string) => get(url).then((r) => r.text()).then((t) => parser.parse(t));
-
-  const { profile } = await xml(`${base}/?xml=1`);
-  if (!profile) throw new Error('perfil no encontrado');
-  if (profile.privacyState !== 'public') throw new Error('el perfil no es público');
+  const { profile, base } = await fetchPublicProfile(id);
 
   const refs: GameRef[] = asArray<any>(profile.mostPlayedGames?.mostPlayedGame)
     .map((g) => ({
@@ -162,15 +157,44 @@ async function fromPublicProfile(id: string): Promise<SourceData> {
     }),
   );
 
-  const prof: SourceProfile = {
+  return build(toPublicProfile(profile, base), results);
+}
+
+/**
+ * Solo el perfil (estado y último juego): un pedido, para el status en vivo.
+ * Usa siempre el XML público, que dice si está "en partida" sin necesitar key.
+ */
+export async function getSteamLiveProfile(): Promise<SourceData> {
+  const id = import.meta.env.STEAM_ID;
+  if (!id) return demoSteam('Falta STEAM_ID');
+  try {
+    const { profile, base } = await fetchPublicProfile(id);
+    return { source: 'steam', profile: toPublicProfile(profile, base), games: [], achievements: [], demo: false };
+  } catch (err) {
+    return demoSteam(`Steam: ${errorMessage(err)}`);
+  }
+}
+
+const xml = (url: string) => get(url).then((r) => r.text()).then((t) => parser.parse(t));
+
+async function fetchPublicProfile(id: string): Promise<{ profile: any; base: string }> {
+  const base = /^\d{17}$/.test(id) ? `${COMMUNITY}/profiles/${id}` : `${COMMUNITY}/id/${id}`;
+  const { profile } = await xml(`${base}/?xml=1`);
+  if (!profile) throw new Error('perfil no encontrado');
+  if (profile.privacyState !== 'public') throw new Error('el perfil no es público');
+  return { profile, base };
+}
+
+function toPublicProfile(profile: any, base: string): SourceProfile {
+  const stateMessage = profile.stateMessage?.replace(/<[^>]+>/g, ' ').trim();
+  return {
     username: profile.steamID,
     avatar: profile.avatarFull,
     url: base,
     memberSince: profile.memberSince,
-    status: profile.onlineState === 'in-game' ? 'En partida' : profile.stateMessage?.replace(/<[^>]+>/g, ' ').trim() || undefined,
+    status: profile.onlineState === 'in-game' ? 'En partida' : stateMessage || undefined,
     lastGame: lastGameFromXml(profile),
   };
-  return build(prof, results);
 }
 
 /** Ficha de la tienda + rareza global de cada logro. Ninguno de los dos necesita API key. */

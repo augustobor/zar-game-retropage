@@ -20,6 +20,13 @@
 
   --sunset: linear-gradient(180deg, #fff6d6, var(--sun) 30%, var(--orange) 55%, var(--pink) 80%);
 
+  /* Niveles de rareza de un logro (ver rarityTier en lib/format.ts) */
+  --rarity-common: #b9b2c9;
+  --rarity-uncommon: #3ddc84;
+  --rarity-rare: #4aa8ff;
+  --rarity-epic: #b26bff;
+  --rarity-legendary: #ffb627;
+
   --font-display: 'Bungee', system-ui, sans-serif;
   --font-pixel: 'Press Start 2P', monospace;
   --font-script: 'Yellowtail', cursive;
@@ -94,6 +101,12 @@ a {
 .panels {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Bloques apilados uno arriba del otro */
+.stack {
+  display: grid;
   gap: 1.5rem;
 }
 

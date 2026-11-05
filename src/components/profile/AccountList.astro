@@ -1,23 +1,59 @@
 ---
 import AccountCard from './AccountCard.astro';
 import type { SourceData } from '../../lib/types';
+import { url } from '../../lib/url';
 
 interface Props {
   sources: SourceData[];
+  /** true cuando se renderiza en vivo desde /partials/cuentas/ (no en el build) */
+  live?: boolean;
 }
-const { sources } = Astro.props;
+const { sources, live = false } = Astro.props;
+
+const time = new Date().toLocaleString('es-AR', {
+  dateStyle: live ? undefined : 'short',
+  timeStyle: 'short',
+  hourCycle: 'h23',
+  timeZone: 'America/Argentina/Buenos_Aires',
+});
+const freshness = live ? `En vivo · actualizado ${time}` : `Datos del ${time}`;
+const freshnessClass = live ? 'account-list__freshness account-list__freshness--live' : 'account-list__freshness';
+// El script pide esta URL cada 60 s y reemplaza el contenido de la sección
+const liveSrc = url('/partials/cuentas/');
 ---
 
-<section class="account-list" aria-labelledby="cuentas-title">
-  <h2 class="visually-hidden" id="cuentas-title">Cuentas</h2>
+<section class="account-list" aria-labelledby="cuentas-title" data-live-src={liveSrc} aria-live="polite">
+  <h3 class="visually-hidden" id="cuentas-title">Estado actual en Steam y RetroAchievements</h3>
+  <p class={freshnessClass}>{freshness}</p>
   <div class="account-list__grid">
     {sources.map((source) => <AccountCard source={source} />)}
   </div>
 </section>
 
+<script>
+  import '../../scripts/live-status';
+</script>
+
 <style>
   .account-list {
-    padding-top: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .account-list__freshness {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-pixel);
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  .account-list__freshness--live {
+    color: var(--teal);
+  }
+
+  .account-list__freshness--live::before {
+    content: '● ';
+    color: #3ddc84;
+    animation: blink 1.6s steps(1) infinite;
   }
 
   .account-list__grid {

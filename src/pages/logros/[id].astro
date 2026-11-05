@@ -2,7 +2,6 @@
 import Base from '../../layouts/Base.astro';
 import DetailHero from '../../components/detail/DetailHero.astro';
 import AchievementShowcase from '../../components/detail/AchievementShowcase.astro';
-import RarityMeter from '../../components/detail/RarityMeter.astro';
 import RelatedGame from '../../components/detail/RelatedGame.astro';
 import RelatedAchievements from '../../components/detail/RelatedAchievements.astro';
 import SectionTitle from '../../components/ui/SectionTitle.astro';
@@ -11,7 +10,7 @@ import StatList from '../../components/ui/StatList.astro';
 import { getAchievementRoutes, getAchievementDetail } from '../../lib/data';
 import { profile } from '../../data/profile';
 import { url } from '../../lib/url';
-import { ACHIEVEMENT_TYPES, SOURCE_LABELS, definedStats, formatDateTime, formatNumber, rarityLabel } from '../../lib/format';
+import { ACHIEVEMENT_TYPES, SOURCE_LABELS, definedStats, formatDateTime, rarityTier } from '../../lib/format';
 
 const RELATED_COUNT = 4;
 
@@ -49,7 +48,7 @@ const chips = [
   achievement.points != null ? `${achievement.points} pts` : '',
   achievement.hardcore ? 'Hardcore' : '',
   typeLabel ?? '',
-  rarityLabel(achievement.rarity) ?? '',
+  rarityTier(achievement.rarity)?.label ?? '',
 ].filter(Boolean);
 
 const details = definedStats([
@@ -61,10 +60,8 @@ const details = definedStats([
   { icon: '🔥', label: 'Modo', value: isRetro && !locked && (achievement.hardcore ? 'Hardcore' : 'Softcore') },
   { icon: '📅', label: 'Desbloqueado', value: formatDateTime(achievement.unlockedAt) },
   { icon: '🔒', label: 'Estado', value: locked && 'Todavía bloqueado' },
-  { icon: '👥', label: 'Lo tienen', value: achievement.awarded != null && `${formatNumber(achievement.awarded)} jugadores` },
 ]);
 
-const hasRarity = achievement.rarity != null;
 const related = (game?.achievements ?? []).filter((a) => a.unlockedAt && a.id !== achievement.id).slice(0, RELATED_COUNT);
 const hasRelated = related.length > 0;
 const relatedTitle = `Más de ${achievement.game}`;
@@ -85,30 +82,21 @@ const relatedTitle = `Más de ${achievement.game}`;
   </DetailHero>
 
   <main class="container">
-    <section class="section panels" aria-label="Detalle del logro">
+    <!-- La rareza está en el dorso de la tarjeta (AchievementShowcase) -->
+    <section class="section stack" aria-label="Detalle del logro">
       <article class="panel">
         <h2 class="panel__label">Detalles</h2>
         <StatList items={details} layout="inline" />
       </article>
 
-      <div class="panels">
-        {
-          hasRarity && (
-            <article class="panel">
-              <h2 class="panel__label">Rareza</h2>
-              <RarityMeter rarity={achievement.rarity!} awarded={achievement.awarded} />
-            </article>
-          )
-        }
-        {
-          game && (
-            <article class="panel">
-              <h2 class="panel__label">Juego</h2>
-              <RelatedGame game={game} />
-            </article>
-          )
-        }
-      </div>
+      {
+        game && (
+          <article class="panel">
+            <h2 class="panel__label">Juego</h2>
+            <RelatedGame game={game} />
+          </article>
+        )
+      }
     </section>
 
     {
