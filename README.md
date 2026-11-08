@@ -57,7 +57,7 @@ Un portfolio gamer **estático**: HTML + CSS + un poquito de JS. La única parte
 | 🎲 Juego | `/juegos/:id/` | Tarjeta flotante con la portada, ficha, valoración, capturas y **todos** los logros del juego |
 | ⭐ Logro | `/logros/:id/` | Medalla flotante que **se da vuelta** para mostrar la rareza, detalles, juego y logros relacionados |
 
-Hoy el build genera **~3.900 páginas** (2 listados + 73 juegos + una página por cada logro desbloqueado).
+El build genera **2 listados + una página por juego + una página por cada logro desbloqueado** (los bloqueados no tienen detalle), así que el total crece a medida que se desbloquean logros.
 
 > 🧠 **La idea clave:** los datos se piden a las APIs **al compilar** (`npm run build`), no en el navegador. El visitante recibe HTML ya armado y las API keys **nunca** llegan al cliente. El status en vivo sigue la misma regla: lo arma una función del lado del servidor.
 
@@ -479,7 +479,7 @@ Con `STEAM_API_KEY` se usan `GetOwnedGames`, `GetPlayerAchievements` y `GetSchem
 
 | Entorno | Comportamiento |
 |---|---|
-| `build` | Cada dato se pide **una sola vez** y se comparte entre las ~3.900 páginas |
+| `build` | Cada dato se pide **una sola vez** y se comparte entre todas las páginas |
 | `dev` | Se reutiliza **5 min** (1 min si vino degradado) para no comerse un 429 en cada recarga |
 
 ---
