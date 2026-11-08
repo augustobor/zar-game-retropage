@@ -470,7 +470,7 @@ El sitio es estático **salvo una ruta**: `/partials/cuentas/`, que Vercel ejecu
 | Dato | Cómo se actualiza | Frecuencia |
 |---|---|---|
 | 🟢 Status: Rich Presence, último juego, "Jugando ahora" | Función `/partials/cuentas/` + `src/scripts/live-status.ts` | **En vivo**: cada 60 s mientras la pestaña está abierta |
-| 🏆 Logros, juegos, fichas, plataformas | Rebuild completo del sitio | **Semanal** (lunes 06:00 ART) o a mano |
+| 🏆 Logros, juegos, fichas, plataformas | Rebuild completo del sitio | **Lunes, miércoles, viernes y domingo** (06:00 ART) o a mano |
 
 ### Status en vivo (cómo no expone la key)
 
@@ -486,9 +486,9 @@ Navegador ◀── HTML de las tarjetas ya armadas (sin key)
 - El CDN de Vercel guarda la respuesta 60 s (`s-maxage=60`): RA recibe **como mucho una ronda de pedidos por minuto**, haya las visitas que haya.
 - Si la función no responde (por ejemplo en `npm run preview`), las tarjetas quedan con los datos del build.
 
-### Rebuild semanal
+### Rebuild programado
 
-[`.github/workflows/weekly-rebuild.yml`](.github/workflows/weekly-rebuild.yml) dispara un **Deploy Hook** de Vercel todos los lunes a las 06:00 (hora Argentina). También se puede correr a mano desde GitHub → *Actions* → *Rebuild semanal* → *Run workflow*.
+[`.github/workflows/scheduled-rebuild.yml`](.github/workflows/scheduled-rebuild.yml) dispara un **Deploy Hook** de Vercel los **lunes, miércoles, viernes y domingos** a las 06:00 (hora Argentina), con el cron `0 9 * * 0,1,3,5`. También se puede correr a mano desde GitHub → *Actions* → *Rebuild programado* → *Run workflow*.
 
 ### Pasos para publicar
 

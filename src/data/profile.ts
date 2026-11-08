@@ -29,7 +29,7 @@ export const profile = {
   timeline: [
     { year: '2006', title: 'Insert coin', text: 'Primer joystick en mano con PS1.' },
     { year: '2015', title: 'Llega Steam', text: 'La locura es total.' },
-    { year: '2015', title: 'Llega Retroarchivements', text: 'Lo retro llega al dia de hoy.' },
+    { year: '2023', title: 'Llega Retroarchivements', text: 'Lo retro llega al dia de hoy.' },
     { year: 'Hoy', title: 'Cazador de logros', text: 'Retro y moderno, todo suma al marcador.' },
   ],
 

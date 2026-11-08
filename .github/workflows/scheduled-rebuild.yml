@@ -1,13 +1,15 @@
-# Rebuild semanal: vuelve a construir el sitio en Vercel para traer logros y fichas nuevos.
+# Rebuild programado: vuelve a construir el sitio en Vercel para traer logros y fichas nuevos.
 # El status (último juego, Rich Presence) no depende de esto: se actualiza en vivo cada 60 s.
 #
 # Requiere el secret VERCEL_DEPLOY_HOOK_URL (Vercel → Project → Settings → Git → Deploy Hooks).
-# También se puede correr a mano: GitHub → Actions → "Rebuild semanal" → Run workflow.
-name: Rebuild semanal
+# También se puede correr a mano: GitHub → Actions → "Rebuild programado" → Run workflow.
+name: Rebuild programado
 
 on:
   schedule:
-    - cron: '0 9 * * 1' # lunes 09:00 UTC = 06:00 en Argentina
+    # Lunes, miércoles, viernes y domingo 09:00 UTC = 06:00 en Argentina
+    # (día de la semana: 0 = domingo, 1 = lunes, 3 = miércoles, 5 = viernes)
+    - cron: '0 9 * * 0,1,3,5'
   workflow_dispatch:
 
 jobs:
