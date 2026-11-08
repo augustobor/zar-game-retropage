@@ -1,12 +1,43 @@
 ---
 interface Props {
+  /** Un texto por párrafo. Links con la sintaxis de Markdown: [texto](https://…) */
   paragraphs: string[];
 }
-const { paragraphs } = Astro.props;
+
+interface Segment {
+  text: string;
+  href?: string;
+}
+
+const LINK = /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
+
+/** "Hola [RA](https://…)!" → [{ text: 'Hola ' }, { text: 'RA', href: 'https://…' }, { text: '!' }] */
+function toSegments(paragraph: string): Segment[] {
+  const segments: Segment[] = [];
+  let last = 0;
+  for (const match of paragraph.matchAll(LINK)) {
+    if (match.index > last) segments.push({ text: paragraph.slice(last, match.index) });
+    segments.push({ text: match[1], href: match[2] });
+    last = match.index + match[0].length;
+  }
+  if (last < paragraph.length) segments.push({ text: paragraph.slice(last) });
+  return segments;
+}
+
+const paragraphs = Astro.props.paragraphs.map(toSegments);
 ---
 
 <div class="prose">
-  {paragraphs.map((text) => <p class="prose__paragraph">{text}</p>)}
+  {
+    paragraphs.map((segments) => (
+      <p class="prose__paragraph">
+        {/* El link va en una sola línea: si no, el salto mete un espacio dentro del texto subrayado */}
+        {segments.map((segment) =>
+          segment.href ? <a class="prose__link" href={segment.href} target="_blank" rel="noopener">{segment.text}</a> : segment.text,
+        )}
+      </p>
+    ))
+  }
 </div>
 
 <style>
@@ -14,5 +45,17 @@ const { paragraphs } = Astro.props;
     margin: 0 0 1rem;
     color: var(--ink-soft);
     line-height: 1.7;
+  }
+
+  .prose__link {
+    color: var(--teal);
+    font-weight: 500;
+    text-decoration-color: rgb(25 227 201 / 0.4);
+    text-underline-offset: 3px;
+  }
+
+  .prose__link:hover {
+    color: var(--sun);
+    text-decoration-color: currentColor;
   }
 </style>

@@ -1,13 +1,22 @@
 flowchart TB
-    ENV["🔑 .env<br/>keys y usuarios"] --> BUILD
-    subgraph BUILD["⚙️ astro build (Node)"]
-        LIB["src/lib/<br/>steam.ts · retroachievements.ts"]
-        PAGES["src/pages/*.astro<br/>+ componentes"]
+    ENV["🔑 Variables de entorno<br/>keys y usuarios"] --> BUILD
+    CRON@{ icon: "simple-icons:githubactions", form: "rounded", label: "GitHub Actions · lun mié vie dom", pos: "b", h: 40 }
+    CRON -. "Deploy Hook" .-> BUILD
+    subgraph BUILD["astro build (Node.js)"]
+        LIB@{ icon: "simple-icons:typescript", form: "rounded", label: "src/lib · steam.ts · retroachievements.ts", pos: "b", h: 40 }
+        PAGES@{ icon: "simple-icons:astro", form: "rounded", label: "src/pages/*.astro + componentes", pos: "b", h: 40 }
         LIB --> PAGES
     end
-    STEAM[("🎮 Steam<br/>XML público / Web API / Store")] <--> LIB
-    RA[("👾 RetroAchievements<br/>Web API")] <--> LIB
-    BUILD --> DIST["📦 dist/<br/>HTML + CSS + JS mínimo"]
-    DIST --> HOST["☁️ Hosting estático"]
-    HOST --> BROWSER["🖥️ Navegador<br/>filtro · búsqueda · paginación"]
-    CRON["⏰ Rebuild programado<br/>(pendiente)"] -.-> BUILD
+    STEAM@{ icon: "simple-icons:steam", form: "rounded", label: "Steam · XML público / Web API / Store", pos: "b", h: 40 }
+    RA@{ icon: "simple-icons:retroachievements", form: "rounded", label: "RetroAchievements · Web API", pos: "b", h: 40 }
+    STEAM <--> LIB
+    RA <--> LIB
+    subgraph VERCEL["Vercel (CDN)"]
+        STATIC@{ icon: "simple-icons:html5", form: "rounded", label: "~3.900 páginas estáticas", pos: "b", h: 40 }
+        FN@{ icon: "simple-icons:vercel", form: "rounded", label: "Función /partials/cuentas/ · caché 60 s", pos: "b", h: 40 }
+    end
+    PAGES --> STATIC
+    PAGES --> FN
+    FN -. "perfil y último juego" .-> RA
+    FN -. "perfil XML" .-> STEAM
+    VERCEL --> BROWSER["🖥️ Navegador<br/>filtros · búsqueda · paginación<br/>status cada 60 s"]

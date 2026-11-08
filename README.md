@@ -1,6 +1,6 @@
 # 🕹️ ZAR · Perfil Gamer Neo-Retro
 
-> **PRESS START** ▶️ — Sitio 100 % estático con el perfil gamer de **Zar**: brief, juegos y logros de **Steam** 🎮 y **RetroAchievements** 👾, todo con onda synthwave / neo-retro 🌴🌅.
+> **PRESS START** ▶️ — Sitio estático (con status en vivo) del perfil gamer de **Zar**: brief, juegos y logros de **Steam** 🎮 y **RetroAchievements** 👾, todo con onda synthwave / neo-retro 🌴🌅.
 
 ```
    ███████╗ █████╗ ██████╗
@@ -13,41 +13,70 @@
 
 > *"It's dangerous to go alone! Take this."* 🗡️ → este README.
 
+<p>
+  <img alt="Astro" src="https://img.shields.io/badge/Astro-5-BC52EE?style=for-the-badge&logo=astro&logoColor=white">
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
+  <img alt="Node.js" src="https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white">
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white">
+  <img alt="GitHub Actions" src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white">
+  <img alt="Steam" src="https://img.shields.io/badge/Steam-171A21?style=for-the-badge&logo=steam&logoColor=white">
+  <img alt="RetroAchievements" src="https://img.shields.io/badge/RetroAchievements-FFD23F?style=for-the-badge&logo=retroachievements&logoColor=black">
+  <img alt="Mermaid" src="https://img.shields.io/badge/Mermaid-FF3670?style=for-the-badge&logo=mermaid&logoColor=white">
+</p>
+
 ---
 
 ## 📼 Índice
 
 1. [¿Qué es esto?](#-qué-es-esto)
-2. [Quick start (soplá el cartucho)](#-quick-start-soplá-el-cartucho)
-3. [Variables de entorno](#-variables-de-entorno)
-4. [Arquitectura en 1 imagen](#-arquitectura-en-1-imagen)
-5. [Flujo de datos](#-flujo-de-datos)
-6. [Comportamiento en el navegador](#-comportamiento-en-el-navegador)
-7. [Modelo de datos](#-modelo-de-datos)
-8. [Árbol de componentes](#-árbol-de-componentes)
-9. [Mapa de archivos (hasta el átomo)](#-mapa-de-archivos-hasta-el-átomo)
-10. [Convenciones de código](#-convenciones-de-código)
-11. [APIs, límites y caché](#-apis-límites-y-caché)
-12. [Seguridad de las keys](#-seguridad-de-las-keys)
-13. [Deploy](#-deploy)
-14. [Troubleshooting](#-troubleshooting)
+2. [Stack](#-stack)
+3. [Quick start (soplá el cartucho)](#-quick-start-soplá-el-cartucho)
+4. [Variables de entorno](#-variables-de-entorno)
+5. [Arquitectura en 1 imagen](#-arquitectura-en-1-imagen)
+6. [Flujo de datos](#-flujo-de-datos)
+7. [Comportamiento en el navegador](#-comportamiento-en-el-navegador)
+8. [Modelo de datos](#-modelo-de-datos)
+9. [Árbol de componentes](#-árbol-de-componentes)
+10. [Mapa de archivos (hasta el átomo)](#-mapa-de-archivos-hasta-el-átomo)
+11. [Convenciones de código](#-convenciones-de-código)
+12. [APIs, límites y caché](#-apis-límites-y-caché)
+13. [Seguridad de las keys](#-seguridad-de-las-keys)
+14. [Deploy](#-deploy)
+15. [Troubleshooting](#-troubleshooting)
 
 ---
 
 ## 🎮 ¿Qué es esto?
 
-Un portfolio gamer **estático**: HTML + CSS + un poquito de JS. Nada de servidor en producción.
+Un portfolio gamer **estático**: HTML + CSS + un poquito de JS. La única parte que corre en un servidor es una función chiquita de Vercel para el **status en vivo**.
 
 | Página | Ruta | Qué muestra |
 |---|---|---|
-| 🏠 Home | `/` | Hero synthwave, **Brief** (plataformas, favoritos, timeline) y **Juegos** paginados |
-| 🏆 Logros | `/logros/` | Cuentas de Steam/RA (último juego, Rich Presence) + todos los logros con filtro, buscador y paginación |
+| 🏠 Home | `/` | Hero synthwave, **Brief** (status en vivo de Steam y RA, biografía, plataformas, favoritos, timeline) y **Juegos** paginados |
+| 🏆 Logros | `/logros/` | Todos los logros con filtro por plataforma, buscador y paginación |
 | 🎲 Juego | `/juegos/:id/` | Tarjeta flotante con la portada, ficha, valoración, capturas y **todos** los logros del juego |
-| ⭐ Logro | `/logros/:id/` | Medalla flotante, detalles, rareza, juego y logros relacionados |
+| ⭐ Logro | `/logros/:id/` | Medalla flotante que **se da vuelta** para mostrar la rareza, detalles, juego y logros relacionados |
 
-Hoy el build genera **~575 páginas** (2 listados + 73 juegos + 500 logros).
+Hoy el build genera **~3.900 páginas** (2 listados + 73 juegos + ~3.800 logros: uno por cada logro de cada juego).
 
-> 🧠 **La idea clave:** los datos se piden a las APIs **al compilar** (`npm run build`), no en el navegador. El visitante recibe HTML ya armado y las API keys **nunca** llegan al cliente.
+> 🧠 **La idea clave:** los datos se piden a las APIs **al compilar** (`npm run build`), no en el navegador. El visitante recibe HTML ya armado y las API keys **nunca** llegan al cliente. El status en vivo sigue la misma regla: lo arma una función del lado del servidor.
+
+---
+
+## 🧰 Stack
+
+| | Tecnología | Para qué |
+|:---:|---|---|
+| <img src="https://cdn.simpleicons.org/astro/BC52EE" width="22" alt=""> | **Astro 5** | Genera el sitio: frontmatter (lógica en el build) + HTML + `<style>` con alcance por componente |
+| <img src="https://cdn.simpleicons.org/typescript/3178C6" width="22" alt=""> | **TypeScript** | Toda la lógica: `src/lib/` (APIs, tipos, caché) y `src/scripts/` (JS del navegador) |
+| <img src="https://cdn.simpleicons.org/nodedotjs/5FA04E" width="22" alt=""> | **Node.js** | Corre el build y la función de Vercel (Node 22 en Vercel) |
+| <img src="https://cdn.simpleicons.org/vercel/white" width="22" alt=""> | **Vercel** | Hosting + CDN; la función `/partials/cuentas/` para el status en vivo (`@astrojs/vercel`) |
+| <img src="https://cdn.simpleicons.org/githubactions/2088FF" width="22" alt=""> | **GitHub Actions** | Rebuild programado (lun · mié · vie · dom) vía Deploy Hook |
+| <img src="https://cdn.simpleicons.org/steam/white" width="22" alt=""> | **Steam** | Perfil, juegos y logros (XML público; Web API opcional) + tienda y rareza global |
+| <img src="https://cdn.simpleicons.org/retroachievements/FFD23F" width="22" alt=""> | **RetroAchievements** | Perfil, Rich Presence, progreso por consola y todos los logros (Web API con key) |
+| <img src="https://cdn.simpleicons.org/mermaid/FF3670" width="22" alt=""> | **Mermaid** | Los diagramas de esta documentación (`docs/diagrams/`, `npm run docs:diagrams`) |
+
+Sin frameworks de UI ni librerías de CSS: el único paquete extra en runtime de build es `fast-xml-parser` (para el XML de Steam).
 
 ---
 
@@ -64,9 +93,8 @@ npm run dev               # http://localhost:4321
 | Comando | Qué hace |
 |---|---|
 | `npm run dev` | Servidor de desarrollo con recarga en caliente. Pide datos en cada request (con caché de 5 min) |
-| `npm run build` | Genera el sitio estático en `dist/`. Tarda ~2 min por el ritmo de pedidos a RA ⏳ |
-| `npm run preview` | Sirve `dist/` tal cual quedaría publicado (no llama a ninguna API) |
-| `npm run docs:diagrams` | Vuelve a renderizar `docs/diagrams/*.mmd` → `*.svg` con el tema retro. Usa tu Chrome/Edge instalado |
+| `npm run build` | Genera el sitio para Vercel en `.vercel/output/`. Tarda ~3 min por el ritmo de pedidos a RA ⏳ |
+| `npm run docs:diagrams` | Vuelve a renderizar `docs/diagrams/*.mmd` → `*.svg` con el tema retro y los logos de [simple-icons](https://simpleicons.org). Usa tu Chrome/Edge instalado y necesita conexión (los logos se descargan al renderizar) |
 
 > ⚠️ Sin keys el sitio **igual compila**: muestra datos de demo y un aviso "⚠ Datos de demo". Nunca un Game Over por falta de config.
 
@@ -125,7 +153,7 @@ Dos APIs que no se parecen en nada (JSON de RA vs XML de Steam) terminan en **lo
 
 ## ⚡ Comportamiento en el navegador
 
-El único JS del sitio son dos scripts chiquitos. Todo lo demás es HTML.
+El único JS del sitio son cuatro scripts chiquitos en `src/scripts/`. Todo lo demás es HTML.
 
 ### `collection.ts` — filtro + búsqueda + paginación
 
@@ -145,6 +173,14 @@ Se engancha a cualquier sección con `data-collection`. El HTML ya sale del buil
 ### `image-fallback.ts`
 
 `<img data-fallback="…">`: si la portada vertical de Steam no existe para un juego, se cambia por el header horizontal. Contempla el caso en que la imagen ya falló antes de que cargue el script.
+
+### `live-status.ts` — status en vivo
+
+Al cargar la portada y cada 60 s (solo con la pestaña visible) pide `/partials/cuentas/` y reemplaza las tarjetas de cuenta del Brief. Si la función no responde, quedan las del build. El recorrido completo está en [Deploy → Status en vivo](#status-en-vivo-cómo-no-expone-la-key).
+
+### `flip-card.ts` — tarjeta que se da vuelta
+
+En la página de un logro, click, Enter o Espacio sobre la medalla alternan `aria-pressed`. El giro y el destello en degradé son CSS (`FloatCard.astro`); el script solo cambia ese atributo y pone `.is-spinning` mientras dura el giro.
 
 ---
 
@@ -194,8 +230,8 @@ portfolio-retro-gamer/
 ├── 📁 docs/
 │   ├── render-diagrams.mjs    .mmd → .svg (npm run docs:diagrams)
 │   └── 📁 diagrams/
-│       ├── 01…07-*.mmd        📝 fuente de cada diagrama (Mermaid)
-│       ├── 01…07-*.svg        🖼️ render que muestra este README
+│       ├── 01…08-*.mmd        📝 fuente de cada diagrama (Mermaid)
+│       ├── 01…08-*.svg        🖼️ render que muestra este README
 │       └── mermaid.config.json  tema neo-retro (colores y tipografía)
 ├── 📁 public/
 │   └── favicon.svg            sol synthwave 🌅
@@ -220,7 +256,7 @@ portfolio-retro-gamer/
 
 | Archivo | Qué es |
 |---|---|
-| [`profile.ts`](src/data/profile.ts) | Handle, tagline, bio (oculta por ahora), favoritos, timeline, `steamGames` (appids extra para Steam sin key), `platforms` (solo extras: las plataformas salen solas de Steam + las consolas con progreso en RA, con su icono) y `hiddenPlatforms`. **Es el único archivo que hay que tocar para cambiar textos** |
+| [`profile.ts`](src/data/profile.ts) | Handle, tagline, bio (un texto por párrafo), favoritos, timeline, `steamGames` (appids extra para Steam sin key), `platforms` (solo extras: las plataformas salen solas de Steam + las consolas con progreso en RA, con su icono) y `hiddenPlatforms`. **Es el único archivo que hay que tocar para cambiar textos** |
 
 ### 🏗️ `src/lib/` — lógica de build
 
@@ -278,7 +314,7 @@ portfolio-retro-gamer/
 | `Hero` | Cielo synthwave, sol rayado, piso animado, título y tarjeta con avatar | `retro`, `steam` |
 | `Palms` | SVG de palmeras 🌴 (decorativo, `aria-hidden`) | `class?` |
 | `HudStats` | Los 4 números del HUD (logros, puntos RA, horas, juegos) | `items` |
-| `Brief` | Sección 01: plataformas, favoritos y timeline (la biografía está oculta por ahora) | `platforms` |
+| `Brief` | Sección de la portada: status en vivo, biografía, plataformas, favoritos y timeline | `sources`, `platforms` |
 
 </details>
 
@@ -308,7 +344,8 @@ portfolio-retro-gamer/
 | Componente | Qué renderiza | Props |
 |---|---|---|
 | `AccountList` | Grilla de cuentas (en el Brief) con la marca "Datos del build" o "● En vivo" | `sources`, `live?` |
-| `AccountCard` | Usuario, estado, último juego y Rich Presence en campos | `source` |
+| `AccountCard` | Usuario, estado, último juego y su `PresenceScreen` | `source` |
+| `PresenceScreen` | Pantalla de HUD retro (fondo CRT, scanlines): un titular con lo que está haciendo + fichas que se ajustan sin cortarse | `presence`, `title` |
 
 </details>
 
@@ -320,11 +357,11 @@ portfolio-retro-gamer/
 | `DetailHero` | Cabecera con link de volver, slot `card` y bloque de info (`h1`, lead, link externo) | `backHref`, `backLabel`, `kicker`, `title`, `lead?`, `externalHref?`, `externalLabel?` |
 | `FloatCard` | Contenedor que **flota** 🎈 (sube y baja con giro), brillo holográfico y sombra. Si recibe el slot `back`, **se da vuelta** al hacer click con un destello en degradé. Respeta `prefers-reduced-motion` | slot, slot `back?` |
 | `GameShowcase` | Portada vertical + progreso dentro de `FloatCard` | `game` |
-| `AchievementShowcase` | Medalla con la insignia + puntos dentro de `FloatCard` (marco distinto si es hardcore) | `achievement` |
+| `AchievementShowcase` | Medalla con la insignia + puntos dentro de `FloatCard` (marco distinto si es hardcore o bloqueado). Su dorso muestra el `RarityMeter` | `achievement` |
 | `ScreenshotGallery` | Grilla de capturas | `images`, `gameTitle` |
 | `GameAchievements` | Todos los logros del juego con filtro Desbloqueados/Bloqueados | `game`, `linkedIds` |
 | `RarityMeter` | Nivel de rareza con su color (Común ⚪, Poco común 🟢, Raro 🔵, Épico 🟣, Legendario 🟡), % y barra. Va en el dorso de la tarjeta del logro | `rarity`, `awarded?` |
-| `RelatedGame` | Adapta `GameDetail` → `GameCard` | `game` |
+| `RelatedGame` | Bloque horizontal con la portada centrada en una caja cuadrada, nombre, progreso y "Ver juego ▶" (en celular se apila) | `game` |
 | `RelatedAchievements` | Otros logros desbloqueados del mismo juego | `achievements`, `linkedIds` |
 
 </details>
@@ -345,10 +382,10 @@ portfolio-retro-gamer/
 | Componente | Qué renderiza | Props |
 |---|---|---|
 | `SectionTitle` | `<h2>` con degradé, índice y contador opcionales | `id?`, `index?`, `count?` |
-| `Prose` | Párrafos de texto (hoy sin uso: es el de la biografía oculta) | `paragraphs` |
+| `Prose` | Párrafos de texto (la biografía del Brief) | `paragraphs` |
 | `ChipList` | Lista de pastillas | `items`, `tone?` |
 | `PlatformList` | Plataformas con icono, nombre y cantidad de juegos | `items` (`Platform[]`) |
-| `StatList` | `<dl>` de dato/valor en cajas tipo textfield | `items`, `layout?` (`fields` \| `rows`) |
+| `StatList` | `<dl>` con "🎮 Clave ······ valor", uno por línea (fichas de juego y logro) | `items` |
 | `ProgressBar` | Barra de progreso (`role="progressbar"`) | `value`, `label`, `size?` |
 | `Timeline` | `<ol>` de hitos | `items` |
 
@@ -442,7 +479,7 @@ Con `STEAM_API_KEY` se usan `GetOwnedGames`, `GetPlayerAchievements` y `GetSchem
 
 | Entorno | Comportamiento |
 |---|---|
-| `build` | Cada dato se pide **una sola vez** y se comparte entre las ~575 páginas |
+| `build` | Cada dato se pide **una sola vez** y se comparte entre las ~3.900 páginas |
 | `dev` | Se reutiliza **5 min** (1 min si vino degradado) para no comerse un 429 en cada recarga |
 
 ---
@@ -457,7 +494,7 @@ Con `STEAM_API_KEY` se usan `GetOwnedGames`, `GetPlayerAchievements` y `GetSchem
 4. `.env` está en `.gitignore`.
 5. En CI, las keys van como **secrets** del hosting, nunca en el workflow.
 
-✅ Verificado: el valor de `RA_API_KEY` no aparece en ninguno de los archivos de `dist/`, `.astro/`, cachés de Vite ni logs.
+✅ Verificado: el valor de `RA_API_KEY` no aparece en ninguno de los archivos públicos (`.vercel/output/static/`), ni en `.astro/`, cachés de Vite ni logs. Sí está dentro del código de la función (`.vercel/output/functions/`), que corre en el servidor de Vercel y nadie puede descargar.
 
 ---
 
@@ -474,17 +511,14 @@ El sitio es estático **salvo una ruta**: `/partials/cuentas/`, que Vercel ejecu
 
 ### Status en vivo (cómo no expone la key)
 
-```
-Navegador ──cada 60 s──▶ /partials/cuentas/ (función de Vercel, tiene la key)
-                              │  caché del CDN: 60 s
-                              ├──▶ RetroAchievements (perfil + último juego)
-                              └──▶ Steam (perfil XML)
-Navegador ◀── HTML de las tarjetas ya armadas (sin key)
-```
+![Secuencia del status en vivo](docs/diagrams/08-status-en-vivo.svg)
+
+<sub>📝 Fuente: [`docs/diagrams/08-status-en-vivo.mmd`](docs/diagrams/08-status-en-vivo.mmd)</sub>
 
 - El navegador **nunca** habla con RA ni con Steam: si lo hiciera, la key viajaría en el pedido y se vería con F12. Además, Steam bloquea esos pedidos (CORS).
 - El CDN de Vercel guarda la respuesta 60 s (`s-maxage=60`): RA recibe **como mucho una ronda de pedidos por minuto**, haya las visitas que haya.
-- Si la función no responde (por ejemplo en `npm run preview`), las tarjetas quedan con los datos del build.
+- Si la función no responde, las tarjetas quedan con los datos del build.
+- **RA** muestra su Rich Presence ("Driving the Police Car around Ocean Beach…"). **Steam** no tiene Rich Presence: su pantalla se arma con el estado en línea, los juegos recientes, las horas de 2 semanas y la antigüedad de la cuenta.
 
 ### Rebuild programado
 

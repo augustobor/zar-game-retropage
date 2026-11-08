@@ -1,5 +1,6 @@
 ---
 import SectionTitle from '../ui/SectionTitle.astro';
+import Prose from '../ui/Prose.astro';
 import ChipList from '../ui/ChipList.astro';
 import PlatformList from '../ui/PlatformList.astro';
 import Timeline from '../ui/Timeline.astro';
@@ -14,11 +15,8 @@ interface Props {
   platforms: Platform[];
 }
 const { sources, platforms } = Astro.props;
-// La biografía (profile.bio + location) está oculta por ahora. Para volver a mostrarla,
-// importar Prose ('../ui/Prose.astro') y agregar al inicio del panel:
-//   <h3 class="panel__label">Biografía</h3>
-//   <Prose paragraphs={profile.bio} />
-const { favorites, timeline } = profile;
+const { bio, location, favorites, timeline } = profile;
+const locationLabel = `📍 ${location}`;
 ---
 
 <section class="brief section container" id="brief" aria-labelledby="brief-title">
@@ -27,6 +25,10 @@ const { favorites, timeline } = profile;
   <AccountList sources={sources} />
 
   <article class="panel">
+    <h3 class="panel__label">Biografía</h3>
+    <Prose paragraphs={bio} />
+    <p class="brief__location">{locationLabel}</p>
+
     <h3 class="panel__label">Plataformas</h3>
     <PlatformList items={platforms} />
 
@@ -36,3 +38,10 @@ const { favorites, timeline } = profile;
 
   <Timeline items={timeline} />
 </section>
+
+<style>
+  .brief__location {
+    margin: 0;
+    color: var(--muted);
+  }
+</style>

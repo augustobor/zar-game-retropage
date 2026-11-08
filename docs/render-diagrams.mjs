@@ -7,6 +7,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const BACKGROUND = '#120a22';
+// Logos de tecnologías para los nodos con icono (`A@{ icon: "simple-icons:astro" }`).
+// Mermaid los descarga de unpkg al renderizar, así que hace falta conexión.
+const ICON_PACKS = ['@iconify-json/simple-icons'];
 const BROWSERS = [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
@@ -30,7 +33,7 @@ for (const file of readdirSync(dir).filter((f) => f.endsWith('.mmd'))) {
   await run(input, output, {
     quiet: true,
     puppeteerConfig: { executablePath, headless: 'shell' },
-    parseMMDOptions: { mermaidConfig, backgroundColor: BACKGROUND },
+    parseMMDOptions: { mermaidConfig, backgroundColor: BACKGROUND, iconPacks: ICON_PACKS },
   });
   console.log(`✔ ${file} → ${file.replace(/\.mmd$/, '.svg')}`);
 }

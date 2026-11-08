@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    participant N as 🖥️ Navegador<br/>(live-status.ts)
+    participant C as ☁️ CDN de Vercel
+    participant F as ⚡ Función<br/>/partials/cuentas/
+    participant RA as 👾 RetroAchievements
+    participant ST as 🎮 Steam
+
+    Note over N: La página llega con las tarjetas<br/>del build ("Datos del …")
+    loop al cargar y cada 60 s (solo con la pestaña visible)
+        N->>C: GET /partials/cuentas/
+        alt respuesta en caché (menos de 60 s)
+            C-->>N: HTML de las tarjetas ♻️
+        else caché vencida
+            C->>F: ejecutar la función
+            par con la key del lado del servidor
+                F->>RA: GetUserProfile + RecentlyPlayedGames
+            and
+                F->>ST: perfil XML público
+            end
+            F-->>C: HTML de las tarjetas<br/>Cache-Control: s-maxage=60
+            C-->>N: HTML de las tarjetas
+        end
+        N->>N: reemplaza las tarjetas<br/>("● En vivo · actualizado HH:MM")
+    end
+    Note over N,C: La key nunca llega al navegador:<br/>solo viaja el HTML ya armado

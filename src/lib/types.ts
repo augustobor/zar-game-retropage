@@ -79,14 +79,21 @@ export interface GameDetail {
 }
 
 export interface PresenceField {
-  label: string;
+  /** Sin etiqueta cuando la parte no venía como "Clave: valor" */
+  label?: string;
   value: string;
 }
 
-/** Rich Presence de RA desarmado en campos: "Samus is in Norfair | Energy: [177/399]" */
+/**
+ * Estado actual para la pantalla HUD de cada cuenta.
+ * RA: su Rich Presence desarmado ("Samus is in Norfair | Energy: [177/399]").
+ * Steam: armado con el estado en línea, los juegos recientes y la antigüedad.
+ */
 export interface Presence {
   headline?: string;
   fields: PresenceField[];
+  /** false = desconectado (punto gris); si no se sabe, se asume activo */
+  online?: boolean;
 }
 
 export interface LastGame {

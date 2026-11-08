@@ -5,10 +5,10 @@ export const profile = {
   tagline: 'Achivement Hunter · retro & moderno',
   location: 'Argentina',
 
-  // Oculta por ahora en el Brief (ver comentario en components/home/Brief.astro)
+  // Cada texto es un párrafo. Links con la sintaxis de Markdown: [texto](https://…)
   bio: [
-    'Jugador de los que soplan el cartucho antes de ponerlo. Crecí entre consolas de 16 bits, fichines y partidas que duraban hasta que alguien gritaba "¡a cenar!".',
-    'Hoy reparto el tiempo entre los clásicos —persiguiendo cada logro en RetroAchievements— y los juegos modernos de Steam. La meta es siempre la misma: el 100%.',
+    'Soy Zar. Arranqué en 2006 con una PS1 heredada de mi primo jugando Crash Bash; después vinieron Crash Twinsanity, Indiana Jones a la salida del cole y tardes de Battlefront y Guitar Hero III con mi bro de toda la vida Fede.',
+    'En 2023 volví a lo retro con [RetroAchievements](https://retroachievements.org/user/ElZar): nostalgia y la excusa perfecta para jugar lo que nunca tuve. 100% Hardcore.',
   ],
 
   /**
@@ -27,10 +27,12 @@ export const profile = {
   favorites: ['Crash Bandicoot 2', 'The Legend Of Zelda', 'Kirby', 'Solstice', 'Star Wars: Jedi Fallen Order'],
 
   timeline: [
-    { year: '2006', title: 'Insert coin', text: 'Primer joystick en mano con PS1.' },
+    { year: '2006', title: 'Insert coin y PS1', text: 'Una PS1 heredada de mi primo y Crash Bash como primer juego.' },
+    { year: '2009', title: 'PS2', text: 'jugar Indiana Jones y Crash Twinsanity después del cole.' },
+    { year: '2012', title: 'Player 2: Fede', text: 'Battlefront y Guitar Hero hasta tarde.' },
     { year: '2015', title: 'Llega Steam', text: 'La locura es total.' },
-    { year: '2023', title: 'Llega Retroarchivements', text: 'Lo retro llega al dia de hoy.' },
-    { year: 'Hoy', title: 'Cazador de logros', text: 'Retro y moderno, todo suma al marcador.' },
+    { year: '2023', title: 'Llega RetroAchievements', text: 'Nostalgia y la excusa para jugar lo que nunca tuve: platinarlo.' },
+    { year: 'Hoy', title: 'Cazador de logros', text: "Siempre en hardcore. La maestría más sufrida: Kirby's Dream Land." },
   ],
 
   /**

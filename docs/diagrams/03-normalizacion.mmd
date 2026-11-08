@@ -1,9 +1,9 @@
 flowchart TB
     subgraph RAW["Datos crudos"]
-        R1["RA JSON<br/>AchievementID, BadgeURL,<br/>Date 'YYYY-MM-DD HH:mm:ss'"]
-        S1["Steam XML<br/>apiname, iconClosed,<br/>closed='1', unlockTimestamp"]
+        R1@{ icon: "simple-icons:retroachievements", form: "rounded", label: "RA JSON · AchievementID, BadgeURL, Date", pos: "b", h: 40 }
+        S1@{ icon: "simple-icons:steam", form: "rounded", label: "Steam XML · apiname, iconClosed, closed='1'", pos: "b", h: 40 }
     end
     R1 --> N1["retroachievements.ts"]
     S1 --> N2["steam.ts"]
-    N1 & N2 --> T["types.ts<br/>Achievement · GameProgress<br/>GameDetail · AchievementDetail"]
-    T --> C["Componentes .astro"]
+    N1 & N2 --> T@{ icon: "simple-icons:typescript", form: "rounded", label: "types.ts · Achievement · GameProgress · GameDetail", pos: "b", h: 40 }
+    T --> C@{ icon: "simple-icons:astro", form: "rounded", label: "Componentes .astro", pos: "b", h: 40 }

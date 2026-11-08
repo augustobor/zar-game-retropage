@@ -1,5 +1,5 @@
 ---
-import StatList from '../ui/StatList.astro';
+import PresenceScreen from './PresenceScreen.astro';
 import type { SourceData } from '../../lib/types';
 import { formatDate, SOURCE_LABELS } from '../../lib/format';
 
@@ -14,6 +14,7 @@ const platformLabel = SOURCE_LABELS[source.source];
 const username = profile?.username ?? '—';
 const status = profile?.status;
 const presence = profile?.presence;
+const presenceTitle = source.source === 'retro' ? 'Rich Presence' : 'Estado en Steam';
 
 const last = profile?.lastGame;
 const lastGame = last && {
@@ -44,14 +45,7 @@ const lastGame = last && {
     )
   }
 
-  {
-    presence && (
-      <div class="account-card__presence">
-        {presence.headline && <p class="account-card__presence-head">{presence.headline}</p>}
-        <StatList items={presence.fields} />
-      </div>
-    )
-  }
+  {presence && <PresenceScreen presence={presence} title={presenceTitle} />}
 </a>
 
 <style>
@@ -139,17 +133,5 @@ const lastGame = last && {
 
   .account-card__game-title {
     font-size: 1rem;
-  }
-
-  /* ---------- Rich Presence ---------- */
-
-  .account-card__presence {
-    margin-top: 0.9rem;
-  }
-
-  .account-card__presence-head {
-    margin: 0 0 0.6rem;
-    color: var(--teal);
-    font-size: 0.95rem;
   }
 </style>

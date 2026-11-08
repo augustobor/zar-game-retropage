@@ -1,5 +1,15 @@
 import { XMLParser } from 'fast-xml-parser';
-import type { Achievement, AchievementDetail, GameDetail, GameProgress, LastGame, SourceData, SourceProfile } from './types';
+import type {
+  Achievement,
+  AchievementDetail,
+  GameDetail,
+  GameProgress,
+  LastGame,
+  Presence,
+  PresenceField,
+  SourceData,
+  SourceProfile,
+} from './types';
 import { get, asArray, errorMessage, decodeEntities } from './http';
 import { demoSteam } from './demo';
 import { profile as siteProfile } from '../data/profile';
@@ -186,15 +196,52 @@ async function fetchPublicProfile(id: string): Promise<{ profile: any; base: str
 }
 
 function toPublicProfile(profile: any, base: string): SourceProfile {
-  const stateMessage = profile.stateMessage?.replace(/<[^>]+>/g, ' ').trim();
   return {
     username: profile.steamID,
     avatar: profile.avatarFull,
     url: base,
     memberSince: profile.memberSince,
-    status: profile.onlineState === 'in-game' ? 'En partida' : stateMessage || undefined,
+    // El estado en línea va en la pantalla HUD (presence), no como texto suelto
+    presence: toSteamPresence(profile),
     lastGame: lastGameFromXml(profile),
   };
+}
+
+/**
+ * Steam no tiene Rich Presence: se arma el equivalente con lo que da el perfil público.
+ * Titular = estado ("Jugando X", "En línea", "Visto hace 3 h"); fichas = juegos recientes,
+ * horas de las últimas 2 semanas y antigüedad de la cuenta.
+ */
+function toSteamPresence(profile: any): Presence {
+  const recent = asArray<any>(profile.mostPlayedGames?.mostPlayedGame);
+  const recentHours = recent.reduce((sum, game) => sum + (parseFloat(String(game.hoursPlayed)) || 0), 0);
+  const since = new Date(profile.memberSince);
+
+  const fields: PresenceField[] = [];
+  if (recent.length) fields.push({ label: 'Recientes', value: recent.map((game) => game.gameName).join(' · ') });
+  if (recentHours) fields.push({ label: '2 semanas', value: `${recentHours.toLocaleString('es-AR', { maximumFractionDigits: 1 })} h` });
+  if (!Number.isNaN(since.getTime())) {
+    fields.push({ label: 'Desde', value: since.toLocaleDateString('es-AR', { month: 'short', year: 'numeric' }) });
+  }
+
+  return { headline: steamStateLabel(profile), fields, online: profile.onlineState !== 'offline' };
+}
+
+/** "In-Game<br/>Hades" → "🎮 Jugando Hades" · "Online" → "En línea" · "Last Online 3 hrs, 5 mins ago" → "Visto hace 3 h, 5 min" */
+function steamStateLabel(profile: any): string {
+  if (profile.onlineState === 'in-game') {
+    const game = profile.inGameInfo?.gameName;
+    return game ? `🎮 Jugando ${game}` : '🎮 En partida';
+  }
+  if (profile.onlineState === 'online') return 'En línea';
+
+  const lastOnline = String(profile.stateMessage ?? '').match(/Last Online (.+) ago/i)?.[1];
+  if (!lastOnline) return 'Desconectado';
+  const ago = lastOnline
+    .replace(/\bdays?\b/g, (unit) => (unit === 'day' ? 'día' : 'días'))
+    .replace(/\bhrs?\b/g, 'h')
+    .replace(/\bmins?\b/g, 'min');
+  return `Visto hace ${ago}`;
 }
 
 /** Ficha de la tienda + rareza global de cada logro. Ninguno de los dos necesita API key. */
