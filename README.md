@@ -57,7 +57,7 @@ Un portfolio gamer **estático**: HTML + CSS + un poquito de JS. La única parte
 | 🎲 Juego | `/juegos/:id/` | Tarjeta flotante con la portada, ficha, valoración, capturas y **todos** los logros del juego |
 | ⭐ Logro | `/logros/:id/` | Medalla flotante que **se da vuelta** para mostrar la rareza, detalles, juego y logros relacionados |
 
-Hoy el build genera **~3.900 páginas** (2 listados + 73 juegos + ~3.800 logros: uno por cada logro de cada juego).
+Hoy el build genera **~3.900 páginas** (2 listados + 73 juegos + una página por cada logro desbloqueado).
 
 > 🧠 **La idea clave:** los datos se piden a las APIs **al compilar** (`npm run build`), no en el navegador. El visitante recibe HTML ya armado y las API keys **nunca** llegan al cliente. El status en vivo sigue la misma regla: lo arma una función del lado del servidor.
 
@@ -290,7 +290,7 @@ portfolio-retro-gamer/
 | [`index.astro`](src/pages/index.astro) | `/` | Hero + Brief + GameGrid |
 | [`logros/index.astro`](src/pages/logros/index.astro) | `/logros/` | AccountList + AchievementList |
 | [`juegos/[id].astro`](src/pages/juegos/[id].astro) | `/juegos/:id/` | `getStaticPaths` lista los juegos; cada página pide **su** ficha |
-| [`logros/[id].astro`](src/pages/logros/[id].astro) | `/logros/:id/` | `getStaticPaths` lista **todos** los logros de todos los juegos (desbloqueados o no), así cualquier tarjeta abre su detalle |
+| [`logros/[id].astro`](src/pages/logros/[id].astro) | `/logros/:id/` | `getStaticPaths` lista solo los logros **desbloqueados** de todos los juegos. Los bloqueados se ven en la lista del juego pero no tienen detalle 🔒 |
 | [`partials/cuentas.astro`](src/pages/partials/cuentas.astro) | `/partials/cuentas/` | **Única ruta no estática** (`prerender = false`): función de Vercel que devuelve las tarjetas de cuenta con datos en vivo |
 
 ### 🧩 `src/components/`
@@ -334,7 +334,7 @@ portfolio-retro-gamer/
 | Componente | Qué renderiza | Props |
 |---|---|---|
 | `AchievementList` | Listado general paginado (12 por página) | `achievements` |
-| `AchievementCard` | `<li>` con insignia, título, descripción, puntos, rareza, fecha y una franja con el **juego al que pertenece** (icono, nombre y plataforma). Modo bloqueado en gris. Es link si existe la página | `achievement`, `group`, `href?`, `showGame?`, `hidden?` |
+| `AchievementCard` | `<li>` con insignia, título, descripción, puntos, rareza, fecha y una franja con el **juego al que pertenece** (icono, nombre y plataforma). Modo bloqueado en gris. Es link solo si está desbloqueado (los bloqueados no tienen página) | `achievement`, `group`, `href?`, `showGame?`, `hidden?` |
 
 </details>
 
@@ -357,7 +357,7 @@ portfolio-retro-gamer/
 | `DetailHero` | Cabecera con link de volver, slot `card` y bloque de info (`h1`, lead, link externo) | `backHref`, `backLabel`, `kicker`, `title`, `lead?`, `externalHref?`, `externalLabel?` |
 | `FloatCard` | Contenedor que **flota** 🎈 (sube y baja con giro), brillo holográfico y sombra. Si recibe el slot `back`, **se da vuelta** al hacer click con un destello en degradé. Respeta `prefers-reduced-motion` | slot, slot `back?` |
 | `GameShowcase` | Portada vertical + progreso dentro de `FloatCard` | `game` |
-| `AchievementShowcase` | Medalla con la insignia + puntos dentro de `FloatCard` (marco distinto si es hardcore o bloqueado). Su dorso muestra el `RarityMeter` | `achievement` |
+| `AchievementShowcase` | Medalla con la insignia + puntos dentro de `FloatCard` (marco distinto si es hardcore). Su dorso muestra el `RarityMeter` | `achievement` |
 | `ScreenshotGallery` | Grilla de capturas | `images`, `gameTitle` |
 | `GameAchievements` | Todos los logros del juego con filtro Desbloqueados/Bloqueados | `game`, `linkedIds` |
 | `RarityMeter` | Nivel de rareza con su color (Común ⚪, Poco común 🟢, Raro 🔵, Épico 🟣, Legendario 🟡), % y barra. Va en el dorso de la tarjeta del logro | `rarity`, `awarded?` |

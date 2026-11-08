@@ -14,7 +14,7 @@ import { ACHIEVEMENT_TYPES, SOURCE_LABELS, definedStats, formatDateTime, rarityT
 
 const RELATED_COUNT = 4;
 
-/** Una página por cada logro de cada juego (desbloqueado o no): /logros/retro-5760/, /logros/steam-1774580-…/ */
+/** Una página por cada logro desbloqueado: /logros/retro-5760/, /logros/steam-1774580-…/ (los bloqueados no tienen) */
 export async function getStaticPaths() {
   const routes = await getAchievementRoutes();
   return routes.map(({ id, gameId }) => ({ params: { id }, props: { id, gameId } }));
@@ -25,9 +25,8 @@ interface Props {
   gameId: string;
 }
 const { achievement, game } = await getAchievementDetail(Astro.props.id, Astro.props.gameId);
-if (!achievement) return Astro.redirect(url('/logros/'));
+if (!achievement?.unlockedAt) return Astro.redirect(url('/logros/'));
 
-const locked = !achievement.unlockedAt;
 const title = `${achievement.title} · ${achievement.game} · ${profile.handle}`;
 const description = `${achievement.title}: ${achievement.description}`;
 const sourceLabel = SOURCE_LABELS[achievement.source];
@@ -44,7 +43,6 @@ const externalHref = isRetro
   : `https://steamcommunity.com/stats/${achievement.gameId.replace('steam-', '')}/achievements`;
 
 const chips = [
-  locked ? '🔒 Bloqueado' : '',
   achievement.points != null ? `${achievement.points} pts` : '',
   achievement.hardcore ? 'Hardcore' : '',
   typeLabel ?? '',
@@ -57,9 +55,8 @@ const details = definedStats([
   { icon: '💎', label: 'Puntos', value: achievement.points },
   { icon: '📈', label: 'RetroRatio', value: difficulty },
   { icon: '🧩', label: 'Tipo', value: typeLabel },
-  { icon: '🔥', label: 'Modo', value: isRetro && !locked && (achievement.hardcore ? 'Hardcore' : 'Softcore') },
+  { icon: '🔥', label: 'Modo', value: isRetro && (achievement.hardcore ? 'Hardcore' : 'Softcore') },
   { icon: '📅', label: 'Desbloqueado', value: formatDateTime(achievement.unlockedAt) },
-  { icon: '🔒', label: 'Estado', value: locked && 'Todavía bloqueado' },
 ]);
 
 const related = (game?.achievements ?? []).filter((a) => a.unlockedAt && a.id !== achievement.id).slice(0, RELATED_COUNT);

@@ -104,15 +104,17 @@ export async function getAchievementList(): Promise<Achievement[]> {
 }
 
 /**
- * Rutas de /logros/:id/: TODOS los logros de todos los juegos (desbloqueados o no),
- * así cualquier tarjeta de logro —en el listado o dentro de un juego— abre su detalle.
+ * Rutas de /logros/:id/: solo los logros DESBLOQUEADOS de todos los juegos.
+ * Los bloqueados se ven en la lista del juego pero no tienen detalle hasta que se ganen.
  * Las fichas ya se piden para las páginas de juego: acá salen de la caché.
  */
 export async function getAchievementRoutes(): Promise<{ id: string; gameId: string }[]> {
   const [games, list] = await Promise.all([getGames(), getAchievementList()]);
   const details = await Promise.all(games.map((game) => getGameDetail(game.id)));
   const routes = new Map<string, string>();
-  for (const detail of details) for (const a of detail?.achievements ?? []) routes.set(a.id, a.gameId);
+  for (const detail of details) {
+    for (const a of detail?.achievements ?? []) if (a.unlockedAt) routes.set(a.id, a.gameId);
+  }
   // Logros del listado cuyo juego no tiene ficha (p. ej. fuera del progreso de RA)
   for (const a of list) if (!routes.has(a.id)) routes.set(a.id, a.gameId);
   return [...routes].map(([id, gameId]) => ({ id, gameId }));
